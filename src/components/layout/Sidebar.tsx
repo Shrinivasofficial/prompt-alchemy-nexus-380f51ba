@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Role, Task, getRolesWithCount, getTasksWithCount } from "@/data/prompts";
+import { Role, Task } from "@/types";
+import { getRolesWithCount, getTasksWithCount } from "@/data/prompts";
 import { 
   Home, 
   LayoutDashboard, 

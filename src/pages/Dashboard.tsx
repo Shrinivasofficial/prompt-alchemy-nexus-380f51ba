@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -8,9 +7,8 @@ import { PromptCard } from "@/components/ui/PromptCard";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { TabsList } from "@/components/ui/TabsList";
 import { TabItem } from "@/types";
+import { Role, Task } from "@/types";
 import { 
-  Role, 
-  Task, 
   prompts, 
   getRolePrompts, 
   getTaskPrompts, 

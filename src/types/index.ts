@@ -7,7 +7,8 @@ export type Role =
   | "Analyst" 
   | "Manager" 
   | "Product Manager" 
-  | "Customer Support";
+  | "Customer Support"
+  | "Technical";
 
 export type Task = 
   | "Writing" 
