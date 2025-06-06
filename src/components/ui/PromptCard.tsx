@@ -3,9 +3,16 @@ import { useState } from "react";
 import { Prompt } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Copy, Star, Share } from "lucide-react";
+import { Copy, Star, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -16,6 +23,7 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showUsage, setShowUsage] = useState(false);
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(prompt.content);
@@ -29,13 +37,38 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     setTimeout(() => setCopied(false), 2000);
   };
   
-  const handleShare = () => {
-    // In a real app, this would open a share modal or copy a shareable link
-    toast({
-      title: "Share feature",
-      description: "Share functionality would open here",
-      duration: 2000,
-    });
+  // Extract placeholders from the prompt content
+  const extractPlaceholders = () => {
+    const regex = /\[(.*?)\]/g;
+    const content = prompt.content;
+    let match;
+    const placeholders = [];
+    
+    while ((match = regex.exec(content)) !== null) {
+      if (!placeholders.includes(match[1])) {
+        placeholders.push(match[1]);
+      }
+    }
+    
+    return placeholders;
+  };
+  
+  // Generate sample values based on the prompt type
+  const generateSampleValues = (placeholder: string) => {
+    const samples: {[key: string]: string[]} = {
+      "PRODUCT": ["Smart Home Security System", "Organic Skincare Subscription Box", "AI Writing Assistant"],
+      "BRAND VOICE": ["Professional & Authoritative", "Friendly & Conversational", "Playful & Energetic"],
+      "AUDIENCE": ["Tech-savvy Millennials", "Busy Parents", "Small Business Owners"],
+      "BUSINESS/PRODUCT": ["Fitness Mobile App", "Eco-friendly Cleaning Service", "Online Course Platform"],
+      "FEATURE/API": ["User Authentication System", "Payment Processing API", "Data Visualization Library"],
+      "AUDIENCE TECHNICAL LEVEL": ["Beginner Developers", "Experienced Engineers", "Non-technical Stakeholders"],
+      "DETAILS": ["5 developers, 10 user stories", "3 designers, tight deadline", "Remote team, complex project"],
+      "PROTOTYPE DETAILS": ["E-commerce Mobile App", "SaaS Dashboard Interface", "Healthcare Patient Portal"],
+      "ARCHITECTURE DETAILS": ["Microservices Backend", "Serverless Function Architecture", "Monolithic Application"],
+      "ISSUE TYPE": ["Payment Processing Error", "Account Access Problem", "Shipping Delay"],
+    };
+    
+    return samples[placeholder] || ["Example 1", "Example 2", "Example 3"];
   };
 
   // Animation delay based on index for staggered appearance
@@ -91,10 +124,10 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               variant="ghost"
               size="sm"
               className="h-8 w-8 p-0"
-              onClick={handleShare}
+              onClick={() => setShowUsage(true)}
             >
-              <Share className="h-4 w-4" />
-              <span className="sr-only">Share</span>
+              <FileText className="h-4 w-4" />
+              <span className="sr-only">Sample Usage</span>
             </Button>
             
             <Button
@@ -120,6 +153,43 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
           )}
         />
       </div>
+      
+      {/* Sample Usage Dialog */}
+      <Dialog open={showUsage} onOpenChange={setShowUsage}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sample Usage</DialogTitle>
+            <DialogDescription>
+              Replace the placeholders with your specific information.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="rounded-md bg-muted p-4">
+              <pre className="text-sm whitespace-pre-wrap">{prompt.content}</pre>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium">Fill in these placeholders:</h4>
+              {extractPlaceholders().map((placeholder) => (
+                <div key={placeholder} className="space-y-2">
+                  <h5 className="text-sm font-semibold">[{placeholder}]</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    {generateSampleValues(placeholder).map((example, i) => (
+                      <div 
+                        key={i}
+                        className="bg-background border border-border rounded-md p-2 text-xs"
+                      >
+                        "{example}"
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
