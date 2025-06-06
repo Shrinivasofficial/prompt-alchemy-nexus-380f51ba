@@ -25,16 +25,26 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const [copied, setCopied] = useState(false);
   const [showUsage, setShowUsage] = useState(false);
   
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(prompt.content);
-    setCopied(true);
-    toast({
-      title: "Copied to clipboard",
-      description: "Prompt content has been copied to your clipboard",
-      duration: 2000,
-    });
-    
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt.content);
+      setCopied(true);
+      toast({
+        title: "Copied to clipboard",
+        description: "Prompt content has been copied to your clipboard",
+        duration: 2000,
+      });
+      
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy text: ", error);
+      toast({
+        title: "Copy failed",
+        description: "Could not copy to clipboard. Please try again.",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
   };
   
   // Extract placeholders from the prompt content
