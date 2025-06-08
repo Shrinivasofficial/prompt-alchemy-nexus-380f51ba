@@ -133,12 +133,28 @@ export const prompts: Prompt[] = [
     views: 1056,
     rating: 4.7,
     createdAt: "2023-12-08T09:35:00Z"
-  }
+  },
+  
+    {
+      id: "13",
+      title: "Test Role Prompt Example",
+      description: "Example prompt to validate 'Test Role' filter logic",
+      content: "You are a test automation expert validating prompt role filtering. Write a brief explanation of why role-based filtering is important in a prompt management system. Include test cases for role matching and display logic.",
+      roles: ["Test Role"],
+      tasks: ["Planning", "Creative", "Writing"],
+      views: 33,
+      rating: 4.3,
+      createdAt: "2025-06-08T08:00:00Z"
+    }
+    
 ];
 
 export const getRolePrompts = (role: Role): Prompt[] => {
-  return prompts.filter(prompt => prompt.roles.includes(role));
+  return prompts.filter(prompt =>
+    prompt.roles.some(r => r.toLowerCase() === role.toLowerCase())
+  );
 };
+
 
 export const getTaskPrompts = (task: Task): Prompt[] => {
   return prompts.filter(prompt => prompt.tasks.includes(task));

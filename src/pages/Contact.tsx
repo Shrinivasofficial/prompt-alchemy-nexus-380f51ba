@@ -70,7 +70,7 @@ const Contact = () => {
             <Link to="/about" className="text-sm font-medium hover-underline">
               About
             </Link>
-            <Link to="/contact" className="text-sm font-medium hover-underline font-semibold text-primary">
+            <Link to="/contact" className="text-sm font-medium hover-underline hover:font-semibold text-primary">
               Contact
             </Link>
           </nav>

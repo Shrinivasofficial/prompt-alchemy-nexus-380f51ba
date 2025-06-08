@@ -81,36 +81,29 @@ const About = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation">
-              {/* Team member cards */}
-              {[
-                {
-                  name: "Jane Smith",
-                  role: "Founder & CEO",
-                  bio: "With 10+ years of experience in AI and machine learning, Jane founded PromptNexus to bridge the gap between AI capability and human creativity.",
-                  delay: 0.1
-                },
-                {
-                  name: "Alex Johnson",
-                  role: "Chief Technology Officer",
-                  bio: "Alex leads our engineering team, bringing deep expertise in software architecture and natural language processing to create a seamless user experience.",
-                  delay: 0.15
-                },
-                {
-                  name: "Mei Chen",
-                  role: "Lead Designer",
-                  bio: "Mei crafts the beautiful interfaces and experiences that make PromptNexus both visually stunning and intuitive to use for all kinds of users.",
-                  delay: 0.2
-                }
-              ].map((member, index) => (
-                <div key={index} className="bg-background rounded-xl p-6 border border-border shadow-sm hover:shadow-premium transition-shadow">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 animate-pulse-slow" />
-                  <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                  <p className="text-primary mb-4 text-sm">{member.role}</p>
-                  <p className="text-muted-foreground">{member.bio}</p>
-                </div>
-              ))}
-            </div>
+            <div className="w-full flex justify-center">
+  <div className="max-w-md w-full stagger-animation">
+    {[
+      {
+        name: "Shrinivas S",
+        role: "Founder PromptNexus",
+        bio: "Hey! I’m Shrinivas, founder of PromptNexus. I blend my love for AI and code to build smart tools that help people do more with less. Big on tech, bigger on impact.",
+        delay: 0.15
+      }
+    ].map((member, index) => (
+      <div
+        key={index}
+        className="bg-background rounded-xl p-6 border border-border shadow-sm hover:shadow-premium transition-shadow mx-auto"
+      >
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 animate-pulse-slow mx-auto" />
+        <h3 className="text-xl font-semibold mb-1 text-center">{member.name}</h3>
+        <p className="text-primary mb-4 text-sm text-center">{member.role}</p>
+        <p className="text-muted-foreground text-center">{member.bio}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
           </div>
         </section>
         
