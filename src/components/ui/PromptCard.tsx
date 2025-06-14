@@ -126,7 +126,7 @@ export function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
-            {prompt.views} views
+            {prompt.createdBy}
           </div>
           
           <div className="flex gap-2">

@@ -8,7 +8,7 @@ export type Role =
   | "Manager" 
   | "Product Manager" 
   | "Customer Support"
-  | "Test Role"
+  | "College Student"
   | "Technical";
 
 export type Task = 
@@ -19,6 +19,7 @@ export type Task =
   | "Technical" 
   | "Research" 
   | "Communication" 
+  | "Learning"
   | "Planning";
 
 export interface Prompt {
@@ -28,7 +29,7 @@ export interface Prompt {
   content: string;
   roles: Role[];
   tasks: Task[];
-  views: number;
+  createdBy: string;
   rating: number;
   createdAt: string;
 }
