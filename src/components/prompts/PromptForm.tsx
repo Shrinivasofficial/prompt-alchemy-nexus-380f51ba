@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getAllRoles, getAllTasks } from "@/data/prompts";
@@ -69,7 +70,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
           tasks,
           sample_output: sample || null,
         },
-        user.id // Pass user.id as UUID!
+        user.id
       );
       toast({ title: "Prompt added successfully!", duration: 2000, variant: "default" });
       setTitle("");
@@ -81,8 +82,15 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
       setErrors([]);
       onPromptCreated && onPromptCreated();
       postSubmitCallback && postSubmitCallback();
-    } catch (error) {
-      toast({ title: "Error", description: String(error), variant: "destructive" });
+    } catch (error: any) {
+      // Show better error messages from Supabase
+      toast({
+        title: "Error",
+        description: typeof error?.message === "string"
+          ? error.message
+          : JSON.stringify(error, null, 2),
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -180,5 +188,4 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
     </form>
   );
 };
-
 export default PromptForm;

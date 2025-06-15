@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-const PromptList: React.FC<{ refreshFlag: boolean }> = ({ refreshFlag }) => {
+// Add support for byRole/byTask props
+const PromptList: React.FC<{ refreshFlag: boolean; byRole?: string; byTask?: string }> = ({ refreshFlag, byRole, byTask }) => {
   const [prompts, setPrompts] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<Record<string, ViewPromptAnalytics>>({});
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ const PromptList: React.FC<{ refreshFlag: boolean }> = ({ refreshFlag }) => {
   // Refetch data if prompt was added
   const fetchAll = () => {
     setLoading(true);
-    Promise.all([fetchPrompts(), fetchPromptAnalytics()])
+    Promise.all([fetchPrompts({ byRole, byTask }), fetchPromptAnalytics()])
       .then(([promptsData, analyticsData]) => {
         setPrompts(promptsData);
         const analyticsMap: Record<string, ViewPromptAnalytics> = {};
@@ -32,9 +33,8 @@ const PromptList: React.FC<{ refreshFlag: boolean }> = ({ refreshFlag }) => {
   useEffect(() => {
     fetchAll();
     // eslint-disable-next-line
-  }, [refreshFlag]);
+  }, [refreshFlag, byRole, byTask]);
 
-  // Show loading at start
   if (loading) return <div>Loading prompts...</div>;
 
   return (

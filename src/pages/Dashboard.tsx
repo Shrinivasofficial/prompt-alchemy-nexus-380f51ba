@@ -4,18 +4,29 @@ import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 import PromptForm from "@/components/prompts/PromptForm";
 import PromptList from "@/components/prompts/PromptList";
 import UserAnalytics from "@/components/analytics/UserAnalytics";
+import { useParams } from "react-router-dom";
 
 const Dashboard = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const isMobile = useIsMobile();
 
-  // After prompt creation, trigger refresh
+  // get route params
+  const { mode, category } = useParams();
+
   const handlePromptCreated = () => setRefreshFlag(f => !f);
+
+  // handle role/task filtering
+  let byRole: string | undefined;
+  let byTask: string | undefined;
+  if (mode === "roles" && category) {
+    byRole = category.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  } else if (mode === "tasks" && category) {
+    byTask = category.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -39,12 +50,9 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="container mx-auto px-4 py-6">
-          {/* Prompt creation form; only show for signed-in users */}
           <PromptForm onPromptCreated={handlePromptCreated} />
-          {/* Personalized analytics */}
           <UserAnalytics />
-          {/* Prompt list from Supabase */}
-          <PromptList refreshFlag={refreshFlag} />
+          <PromptList refreshFlag={refreshFlag} byRole={byRole} byTask={byTask} />
         </div>
       </main>
     </div>

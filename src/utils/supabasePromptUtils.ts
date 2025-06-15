@@ -5,12 +5,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { PromptDB, PromptRatingDB, PromptViewDB, ViewPromptAnalytics } from "@/types";
 
 // Fetch all prompts, sorted recent first
-export const fetchPrompts = async (): Promise<PromptDB[]> => {
-  const { data, error } = await (supabase as any)
+// Add filter parameter (byRole/byTask) with filterValue
+export const fetchPrompts = async (options?: { byRole?: string; byTask?: string }): Promise<PromptDB[]> => {
+  let query = (supabase as any)
     .from("prompts")
     .select("*")
     .order("created_at", { ascending: false });
 
+  if (options?.byRole) {
+    query = query.contains("roles", [options.byRole]);
+  }
+  if (options?.byTask) {
+    query = query.contains("tasks", [options.byTask]);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data as PromptDB[];
 };
