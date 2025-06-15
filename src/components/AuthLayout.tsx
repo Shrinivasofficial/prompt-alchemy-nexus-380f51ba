@@ -9,7 +9,7 @@ export default function AuthLayout({
 }: {
   image?: string;
   children: React.ReactNode;
-  headline: string;
+  headline: React.ReactNode; // FIXED: accept React elements as headline
   description?: string;
 }) {
   return (
