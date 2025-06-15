@@ -22,9 +22,15 @@ export function useUsernames(userIds: string[] = []) {
           map[row.id] = row.username;
         }
         setUsernames(map);
+        // eslint-disable-next-line no-console
+        console.log("[useUsernames] loaded usernames:", map, "for userIds:", userIds, "raw data:", data);
+      } else if (error) {
+        // eslint-disable-next-line no-console
+        console.warn("[useUsernames] error loading usernames:", error.message);
       }
     }
     fetchUsernames();
+    // eslint-disable-next-line
   }, [JSON.stringify(userIds)]);
   return usernames;
 }

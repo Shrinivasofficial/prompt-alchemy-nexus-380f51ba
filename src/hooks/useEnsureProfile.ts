@@ -31,10 +31,18 @@ export function useEnsureProfile({ user, username }: EnsureProfileOpts) {
         ],
         { onConflict: "id" }
       )
-      .then(({ error }) => {
+      .then(({ error, data }) => {
         if (error) {
           // eslint-disable-next-line no-console
           console.warn("Failed to upsert profile info:", error.message);
+        } else {
+          // eslint-disable-next-line no-console
+          console.log(
+            "[useEnsureProfile] Upserted/ensured profile:",
+            data,
+            "user:", user,
+            "username used:", fallbackUsername
+          );
         }
       });
   }, [user?.id, user?.email, username]);
