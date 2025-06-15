@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
 import { useAuth } from "@/context/AuthContext";
+import { PromptRating } from "@/components/ui/PromptRating";
+import { PromptCardActions } from "@/components/ui/PromptCardActions";
+import { usePromptPlaceholders } from "@/hooks/usePromptPlaceholders";
 import {
   Dialog,
   DialogContent,
@@ -40,75 +43,8 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
     }
   }, [user, prompt.id]);
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(prompt.content);
-      setCopied(true);
-      toast({
-        title: "Copied to clipboard",
-        description: "Prompt content has been copied to your clipboard",
-        duration: 2000,
-      });
-      if (user) await utils.logPromptCopy(prompt.id, user.id);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Failed to copy text: ", error);
-      toast({
-        title: "Copy failed",
-        description: "Could not copy to clipboard. Please try again.",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
-  };
-
-  // Rating star rendering
-  const handleRate = async (rating: number) => {
-    if (!user) {
-      toast({ title: "Sign in required", description: "Sign in to rate", variant: "destructive" });
-      return;
-    }
-    setLoadingRating(true);
-    try {
-      await utils.ratePrompt(prompt.id, user.id, rating);
-      setMyRating(rating);
-      toast({ title: "Rated!", duration: 1300 });
-    } catch (e) {
-      toast({ title: "Error", description: String(e), variant: "destructive" });
-    } finally {
-      setLoadingRating(false);
-    }
-  };
-
-  // Extract placeholders from the prompt content
-  const extractPlaceholders = () => {
-    const regex = /\[(.*?)\]/g;
-    const content = prompt.content;
-    let match;
-    const placeholders = [];
-    while ((match = regex.exec(content)) !== null) {
-      if (!placeholders.includes(match[1])) {
-        placeholders.push(match[1]);
-      }
-    }
-    return placeholders;
-  };
-
-  const generateSampleValues = (placeholder: string) => {
-    const samples: {[key: string]: string[]} = {
-      "PRODUCT": ["Smart Home Security System", "Organic Skincare Subscription Box", "AI Writing Assistant"],
-      "BRAND VOICE": ["Professional & Authoritative", "Friendly & Conversational", "Playful & Energetic"],
-      "AUDIENCE": ["Tech-savvy Millennials", "Busy Parents", "Small Business Owners"],
-      "BUSINESS/PRODUCT": ["Fitness Mobile App", "Eco-friendly Cleaning Service", "Online Course Platform"],
-      "FEATURE/API": ["User Authentication System", "Payment Processing API", "Data Visualization Library"],
-      "AUDIENCE TECHNICAL LEVEL": ["Beginner Developers", "Experienced Engineers", "Non-technical Stakeholders"],
-      "DETAILS": ["5 developers, 10 user stories", "3 designers, tight deadline", "Remote team, complex project"],
-      "PROTOTYPE DETAILS": ["E-commerce Mobile App", "SaaS Dashboard Interface", "Healthcare Patient Portal"],
-      "ARCHITECTURE DETAILS": ["Microservices Backend", "Serverless Function Architecture", "Monolithic Application"],
-      "ISSUE TYPE": ["Payment Processing Error", "Account Access Problem", "Shipping Delay"],
-    };
-    return samples[placeholder] || ["Example 1", "Example 2", "Example 3"];
-  };
+  // Placeholder extraction and samples
+  const { extractPlaceholders, generateSampleValues } = usePromptPlaceholders(prompt);
 
   const animationDelay = `${index * 0.05}s`;
 
@@ -150,56 +86,28 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
             </Badge>
           ))}
         </div>
-        {/* Rating, but only if not owner */}
-        {!isOwner && (
-          <div className="mb-2 flex items-center gap-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handleRate(i + 1)}
-                className={cn(
-                  "text-yellow-400 transition",
-                  i < (myRating || 0) ? "fill-yellow-400" : "text-gray-300"
-                )}
-                disabled={loadingRating || !user}
-                aria-label={`Rate ${i + 1} star`}
-              >
-                <Star className={i < (myRating || 0) ? "fill-yellow-400" : ""} size={20} />
-              </button>
-            ))}
-            {loadingRating && <span className="text-xs ml-2">Saving...</span>}
-          </div>
-        )}
+        <PromptRating
+          prompt={prompt}
+          user={user}
+          myRating={myRating}
+          setMyRating={setMyRating}
+          loadingRating={loadingRating}
+          setLoadingRating={setLoadingRating}
+          isOwner={!!isOwner}
+        />
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
             {prompt.created_by}
           </div>
           <div className="flex gap-2">
-            {/* Sample Usage button always available */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setShowUsage(true)}
-            >
-              <FileText className="h-4 w-4" />
-              <span className="sr-only">Sample Usage</span>
-            </Button>
-            {/* Copy button only if not owner */}
-            {!isOwner && (
-              <Button
-                variant={copied ? "default" : "ghost"}
-                size="sm"
-                className={cn(
-                  "h-8 w-8 p-0",
-                  copied && "bg-primary text-primary-foreground"
-                )}
-                onClick={copyToClipboard}
-              >
-                <Copy className="h-4 w-4" />
-                <span className="sr-only">Copy</span>
-              </Button>
-            )}
+            <PromptCardActions
+              prompt={prompt}
+              user={user}
+              isOwner={!!isOwner}
+              copied={copied}
+              setCopied={setCopied}
+              setShowUsage={setShowUsage}
+            />
           </div>
         </div>
         <div
