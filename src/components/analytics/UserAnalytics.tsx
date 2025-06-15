@@ -1,17 +1,36 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { fetchUserAnalytics } from "@/utils/supabasePromptUtils";
+import { fetchUserAnalytics, fetchPrompts } from "@/utils/supabasePromptUtils";
 import { Card } from "@/components/ui/card";
 import { BarChart } from "lucide-react";
+import { PromptCard } from "@/components/ui/PromptCard";
 
 const UserAnalytics: React.FC = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
+  const [recentlyRatedPrompts, setRecentlyRatedPrompts] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
-    fetchUserAnalytics(user.email).then(data => setStats(data));
+    fetchUserAnalytics(user.email).then(data => {
+      setStats(data);
+
+      // Extract recently rated prompt_ids (sorted by latest)
+      const ratings = (data.viewsData || [])
+        .filter((v: any) => v.copied === false && v.prompt_id && v.rating)
+        .sort((a: any, b: any) => (b.created_at || 0) - (a.created_at || 0))
+        .slice(0, 5);
+
+      if (ratings.length > 0) {
+        fetchPrompts().then(prompts => {
+          const recentPrompts = prompts.filter((p: any) =>
+            ratings.some((r: any) => r.prompt_id === p.id)
+          );
+          setRecentlyRatedPrompts(recentPrompts);
+        });
+      }
+    });
   }, [user]);
 
   if (!user) return null;
@@ -37,7 +56,18 @@ const UserAnalytics: React.FC = () => {
           <div className="text-xs text-muted-foreground">Prompts Copied</div>
         </div>
       </div>
-      {/* For brevity, add more analytics here as needed */}
+
+      {/* Recent Rated Prompts */}
+      {recentlyRatedPrompts.length > 0 && (
+        <div className="mt-6">
+          <div className="text-md font-semibold mb-3">Prompts You've Recently Rated</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recentlyRatedPrompts.map((prompt, idx) => (
+              <PromptCard key={prompt.id} prompt={prompt} readonlyRating analytics={null} index={idx} />
+            ))}
+          </div>
+        </div>
+      )}
     </Card>
   );
 };
