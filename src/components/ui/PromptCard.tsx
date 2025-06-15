@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { PromptDB, ViewPromptAnalytics } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +29,9 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
   const [showUsage, setShowUsage] = useState(false);
   const [myRating, setMyRating] = useState<number | null>(null);
   const [loadingRating, setLoadingRating] = useState(false);
+
+  // Is the current user the owner of this prompt?
+  const isOwner = user && prompt.created_by === user.id;
 
   // Fetch user's own rating
   useEffect(() => {
@@ -148,28 +150,32 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
             </Badge>
           ))}
         </div>
-        <div className="mb-2 flex items-center gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handleRate(i + 1)}
-              className={cn(
-                "text-yellow-400 transition",
-                i < (myRating || 0) ? "fill-yellow-400" : "text-gray-300"
-              )}
-              disabled={loadingRating || !user}
-              aria-label={`Rate ${i + 1} star`}
-            >
-              <Star className={i < (myRating || 0) ? "fill-yellow-400" : ""} size={20} />
-            </button>
-          ))}
-          {loadingRating && <span className="text-xs ml-2">Saving...</span>}
-        </div>
+        {/* Rating, but only if not owner */}
+        {!isOwner && (
+          <div className="mb-2 flex items-center gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handleRate(i + 1)}
+                className={cn(
+                  "text-yellow-400 transition",
+                  i < (myRating || 0) ? "fill-yellow-400" : "text-gray-300"
+                )}
+                disabled={loadingRating || !user}
+                aria-label={`Rate ${i + 1} star`}
+              >
+                <Star className={i < (myRating || 0) ? "fill-yellow-400" : ""} size={20} />
+              </button>
+            ))}
+            {loadingRating && <span className="text-xs ml-2">Saving...</span>}
+          </div>
+        )}
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
             {prompt.created_by}
           </div>
           <div className="flex gap-2">
+            {/* Sample Usage button always available */}
             <Button
               variant="ghost"
               size="sm"
@@ -179,18 +185,21 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
               <FileText className="h-4 w-4" />
               <span className="sr-only">Sample Usage</span>
             </Button>
-            <Button
-              variant={copied ? "default" : "ghost"}
-              size="sm"
-              className={cn(
-                "h-8 w-8 p-0",
-                copied && "bg-primary text-primary-foreground"
-              )}
-              onClick={copyToClipboard}
-            >
-              <Copy className="h-4 w-4" />
-              <span className="sr-only">Copy</span>
-            </Button>
+            {/* Copy button only if not owner */}
+            {!isOwner && (
+              <Button
+                variant={copied ? "default" : "ghost"}
+                size="sm"
+                className={cn(
+                  "h-8 w-8 p-0",
+                  copied && "bg-primary text-primary-foreground"
+                )}
+                onClick={copyToClipboard}
+              >
+                <Copy className="h-4 w-4" />
+                <span className="sr-only">Copy</span>
+              </Button>
+            )}
           </div>
         </div>
         <div

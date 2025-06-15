@@ -39,7 +39,11 @@ export const createPrompt = async (
 };
 
 // Rate a prompt (upsert for the user/prompt combination) - NOW uses uuid
-export const ratePrompt = async (prompt_id: string, user_id: string, rating: number) => {
+export const ratePrompt = async (prompt_id: string, user_id: string, rating: number, prompt_owner_id?: string) => {
+  if (prompt_owner_id && prompt_owner_id === user_id) {
+    // Do not allow user to rate own prompt
+    return null;
+  }
   const { data, error } = await (supabase as any)
     .from("prompt_ratings")
     .upsert([{ prompt_id, user_id, rating }], { onConflict: "prompt_id,user_id" })
@@ -61,7 +65,11 @@ export const getUserPromptRating = async (prompt_id: string, user_id: string) =>
 };
 
 // Log prompt copy/view action (by uuid)
-export const logPromptCopy = async (prompt_id: string, user_id: string) => {
+export const logPromptCopy = async (prompt_id: string, user_id: string, prompt_owner_id?: string) => {
+  if (prompt_owner_id && prompt_owner_id === user_id) {
+    // Do not log copy if by owner
+    return;
+  }
   await (supabase as any).from("prompt_views").insert([
     { prompt_id, user_id, copied: true }
   ]);
