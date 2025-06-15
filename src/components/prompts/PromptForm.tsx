@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getAllRoles, getAllTasks } from "@/data/prompts";
@@ -71,7 +70,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
         },
         user.email
       );
-      toast({ title: "Prompt added successfully!", duration: 2000, variant: "success" });
+      toast({ title: "Prompt added successfully!", duration: 2000, variant: "default" });
       setTitle("");
       setRoles([]);
       setTasks([]);
