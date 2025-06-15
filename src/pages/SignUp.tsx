@@ -34,16 +34,19 @@ export default function SignUp() {
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;
       if (user) {
-        // Insert profile into "profiles" table
+        // Upsert profile into "profiles" table
         const { error: profileError } = await supabase
           .from("profiles")
-          .insert([
-            {
-              id: user.id,
-              email: user.email,
-              username,
-            },
-          ]);
+          .upsert(
+            [
+              {
+                id: user.id,
+                email: user.email,
+                username,
+              },
+            ],
+            { onConflict: ["id"] }
+          );
         if (profileError) {
           setError("Signed up, but failed to save username: " + profileError.message);
           // Optionally let user continue
