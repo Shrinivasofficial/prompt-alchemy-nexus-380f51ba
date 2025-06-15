@@ -12,7 +12,6 @@ export default function ResetPassword() {
   const [notification, setNotification] = useState("");
   const navigate = useNavigate();
 
-  // When accessed via email magic link, supabase will set the session token, so just call updateUser
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -22,15 +21,15 @@ export default function ResetPassword() {
     if (error) {
       setNotification(error.message || "Failed to reset password.");
     } else {
-      setNotification("Password updated! You can now sign in with your new password.");
-      setTimeout(() => navigate("/signin"), 2000);
+      setNotification("Password updated! Redirecting you to sign in...");
+      setTimeout(() => navigate("/signin"), 1800);
     }
   };
 
   return (
     <AuthLayout
-      headline="Reset Password"
-      description="Enter a new password for your account."
+      headline={<span className="gradient-text">Reset Password</span>}
+      description="Pick a strong new password for your account."
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
@@ -40,12 +39,13 @@ export default function ResetPassword() {
           required
           minLength={3}
           onChange={e => setPassword(e.target.value)}
+          autoFocus
         />
-        <Button type="submit" size="lg" className="w-full" disabled={loading}>
+        <Button type="submit" size="lg" className="w-full text-base font-semibold flex items-center gap-2" disabled={loading}>
           {loading ? "Updating..." : "Set New Password"}
         </Button>
         {notification && (
-          <div className="text-sm mt-2 text-muted-foreground">{notification}</div>
+          <div className="text-sm mt-2 text-center rounded bg-muted px-3 py-2">{notification}</div>
         )}
       </form>
     </AuthLayout>

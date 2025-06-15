@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -21,7 +22,7 @@ export default function SignUp() {
     setError("");
     setInfo("");
     if (!username || username.length < 2) {
-      setError("Username must be at least 2 characters.");
+      setError("Please pick a username with at least 2 characters.");
       return;
     }
     if (password.length < 3) {
@@ -42,19 +43,19 @@ export default function SignUp() {
             ],
             { onConflict: "id", ignoreDuplicates: false }
           );
-        setInfo("Sign up successful! Please check your email and verify your account before signing in.");
+        setInfo("Sign up successful! Please check your email to verify your account before signing in.");
       } else {
-        setInfo("Sign up successful! Please check your email and verify your account before signing in.");
+        setInfo("Sign up successful! Please check your email to verify your account before signing in.");
       }
     } else {
-      setError("Email already in use. Please use another or sign in.");
+      setError("This email is already in use. Try another, or sign in.");
     }
   };
 
   return (
     <AuthLayout
       image="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=700&q=80"
-      headline="Sign Up"
+      headline={<span className="gradient-text">Sign Up</span>}
       description="Create an account to access all prompts and features."
     >
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -83,18 +84,18 @@ export default function SignUp() {
           onChange={e => setPassword(e.target.value)}
         />
         {error && (
-          <div className="text-destructive text-sm">{error}</div>
+          <div className="rounded text-destructive bg-destructive/10 px-3 py-2 text-sm">{error}</div>
         )}
         {info && (
-          <div className="text-primary text-sm">{info}</div>
+          <div className="rounded text-primary bg-primary/10 px-3 py-2 text-sm">{info}</div>
         )}
-        <Button type="submit" size="lg" className="w-full">
-          Sign Up
+        <Button type="submit" size="lg" className="w-full text-base font-semibold flex items-center gap-2">
+          <User size={20} /> Sign Up
         </Button>
       </form>
       <div className="mt-4 text-sm text-muted-foreground text-center">
         Already have an account?{" "}
-        <Link to="/signin" className="text-primary hover:underline">
+        <Link to="/signin" className="text-primary font-semibold hover:underline">
           Sign in
         </Link>
       </div>

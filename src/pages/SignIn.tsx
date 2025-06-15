@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -16,14 +17,13 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
     e.preventDefault();
     setNotification("");
     setLoading(true);
-    // Set correct redirectTo to /reset-password!
     const redirectTo = window.location.origin + "/reset-password";
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     setLoading(false);
     if (error) {
-      setNotification("Failed to send email. Make sure your email exists and the redirect URL is allowed in your Supabase Auth settings.");
+      setNotification("We couldn't send a reset link. Double-check the email and ensure the URL is allowed in your Supabase project.");
     } else {
-      setNotification("Reset link sent. Please check your email and follow the instructions to reset your password.");
+      setNotification("A reset link was sent! Please check your inbox and follow the instructions.");
     }
   }
 
@@ -31,26 +31,28 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-card rounded-lg shadow-lg p-8 w-full max-w-sm animate-fade-in">
-        <h2 className="text-xl font-bold mb-3">Forgot Password?</h2>
+      <div className="bg-card rounded-xl shadow-lg p-8 w-full max-w-sm animate-fade-in">
+        <h2 className="text-2xl font-extrabold text-primary mb-1">Forgot Password?</h2>
+        <p className="mb-5 text-muted-foreground text-sm">Enter your email to receive a password reset link:</p>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <Input
             type="email"
             placeholder="Email address"
             required
+            autoFocus
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={loading} variant="default">
             {loading ? "Sending..." : "Send Reset Link"}
           </Button>
           {notification && (
-            <div className="text-sm mt-2 text-muted-foreground">{notification}</div>
+            <div className="text-sm mt-2 text-center rounded-md p-2 bg-muted">{notification}</div>
           )}
         </form>
-        <button className="text-primary mt-6 w-full hover:underline" onClick={onClose}>
+        <Button variant="link" className="mt-6 w-full text-primary" onClick={onClose}>
           Back to Sign In
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -71,15 +73,15 @@ export default function SignIn() {
     if (success) {
       navigate("/dashboard");
     } else {
-      setError("Invalid email or password.");
+      setError("Email or password was not recognized. Please try again!");
     }
   };
 
   return (
     <AuthLayout
       image="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80"
-      headline="Sign In"
-      description="Sign in to access all prompts and features."
+      headline={<span className="gradient-text">Sign In</span>}
+      description="Sign in to access your prompts and creative tools."
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
@@ -98,16 +100,18 @@ export default function SignIn() {
           minLength={3}
           onChange={e => setPassword(e.target.value)}
         />
-        {error && <div className="text-destructive text-sm">{error}</div>}
-        <Button type="submit" size="lg" className="w-full">Sign In</Button>
+        {error && <div className="rounded text-destructive bg-destructive/10 px-3 py-2 text-sm">{error}</div>}
+        <Button type="submit" size="lg" className="w-full text-base font-semibold flex items-center gap-2">
+          <LogIn size={20} /> Sign In
+        </Button>
       </form>
-      <div className="flex justify-between mt-4 text-sm">
-        <button className="text-primary hover:underline" onClick={() => setShowReset(true)}>
+      <div className="flex justify-between mt-4 text-sm gap-3">
+        <Button variant="link" className="p-0 text-primary" onClick={() => setShowReset(true)}>
           Forgot password?
-        </button>
-        <span>
+        </Button>
+        <span className="text-muted-foreground">
           No account?{" "}
-          <Link to="/signup" className="text-primary hover:underline">
+          <Link to="/signup" className="text-primary font-semibold hover:underline">
             Sign up
           </Link>
         </span>
