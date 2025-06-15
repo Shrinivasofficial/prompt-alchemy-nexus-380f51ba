@@ -1,5 +1,5 @@
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,26 +18,35 @@ export default function Profile() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [bio, setBio] = useState("");
   const { toast } = useToast();
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
-  // Fetch profile data on mount
-  useEffect(() => {
+  // Fetch profile data on mount and after save
+  const fetchProfile = async () => {
     if (!user) return;
-    (async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username, avatar_url, bio")
-        .eq("id", user.id)
-        .single();
-      if (error) {
-        setUsername("");
-        setAvatarUrl(null);
-        setBio("");
-      } else if (data) {
-        setUsername(data.username || "");
-        setAvatarUrl(data.avatar_url);
-        setBio(data.bio || "");
-      }
-    })();
+    setLoadingProfile(true);
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("username, avatar_url, bio")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      setUsername("");
+      setAvatarUrl(null);
+      setBio("");
+      console.warn("Failed to fetch profile:", error.message);
+    } else if (data) {
+      setUsername(data.username || "");
+      setAvatarUrl(data.avatar_url);
+      setBio(data.bio || "");
+      console.log("[Profile] Loaded profile:", data);
+    }
+    setLoadingProfile(false);
+  };
+
+  useEffect(() => {
+    fetchProfile();
+    // eslint-disable-next-line
   }, [user]);
 
   async function handleSave() {
@@ -48,17 +57,23 @@ export default function Profile() {
       setError("Username must be at least 2 characters.");
       return;
     }
+    // Save changes to profile
     const { error } = await supabase
       .from("profiles")
       .update({ username, bio })
       .eq("id", user.id);
+
     if (error) {
       setError("Failed to update profile.");
       setSaved("");
+      console.warn("Profile update failed:", error.message);
     } else {
       setEditing(false);
       setSaved("Profile saved!");
       toast({ title: "Profile updated", description: "Your profile has been saved!" });
+      console.log("[Profile] Profile updated: ", { username, bio });
+      // Fetch profile again to sync
+      fetchProfile();
     }
   }
 
@@ -123,13 +138,17 @@ export default function Profile() {
       <div className="flex gap-3">
         {editing ? (
           <>
-            <Button onClick={handleSave}>Save</Button>
-            <Button variant="secondary" onClick={() => setEditing(false)}>
+            <Button onClick={handleSave} disabled={loadingProfile}>
+              Save
+            </Button>
+            <Button variant="secondary" onClick={() => setEditing(false)} disabled={loadingProfile}>
               Cancel
             </Button>
           </>
         ) : (
-          <Button onClick={() => setEditing(true)}>Edit profile</Button>
+          <Button onClick={() => setEditing(true)} disabled={loadingProfile}>
+            Edit profile
+          </Button>
         )}
       </div>
     </div>
