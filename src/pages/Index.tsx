@@ -5,6 +5,7 @@ import Hero from "@/components/sections/Hero";
 import Features from "@/components/sections/Features";
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, User } from "lucide-react";
+import MainNavbar from "@/components/layout/MainNavbar";
 
 const Index = () => {
   // Scroll to top on mount
@@ -24,28 +25,7 @@ const Index = () => {
             </div>
             <span className="text-xl font-semibold">PromptNexus</span>
           </div>
-          
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium hover-underline">
-              Home
-            </Link>
-            <Link to="/dashboard" className="text-sm font-medium hover-underline">
-              Dashboard
-            </Link>
-            <Link to="/about" className="text-sm font-medium hover-underline">
-              About
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover-underline">
-              Contact
-            </Link>
-            {/* Add Profile link for logged-in users */}
-            {user && (
-              <Link to="/profile" className="text-sm font-medium hover-underline">
-                Profile
-              </Link>
-            )}
-          </nav>
-          
+          <MainNavbar signOut={signOut} />
           <div className="flex items-center gap-4">
             {!user ? (
               <>
