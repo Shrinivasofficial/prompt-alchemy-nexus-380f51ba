@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -17,8 +16,8 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
     e.preventDefault();
     setNotification("");
     setLoading(true);
-    // Set correct redirectTo (must match allowed password reset URLs in Supabase dashboard!)
-    const redirectTo = window.location.origin + "/signin";
+    // Set correct redirectTo to /reset-password!
+    const redirectTo = window.location.origin + "/reset-password";
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     setLoading(false);
     if (error) {

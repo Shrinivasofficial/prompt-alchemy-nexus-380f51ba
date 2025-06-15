@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
+import ResetPassword from "./pages/ResetPassword";
 import { AuthProvider } from "@/context/AuthContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEnsureProfile } from "@/hooks/useEnsureProfile";
@@ -41,6 +42,7 @@ const App = () => {
               <Route path="/contact" element={<Contact />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/profile" element={
                 <RequireAuth>
                   <Profile />
