@@ -32,6 +32,7 @@ export interface Prompt {
   createdBy: string;
   rating: number;
   createdAt: string;
+  views: number; // Add this property to fix error
 }
 
 export interface TabItem {

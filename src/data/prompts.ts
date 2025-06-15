@@ -1,4 +1,3 @@
-
 import { Prompt, Role, Task } from "../types";
 
 export const prompts: Prompt[] = [
@@ -11,7 +10,8 @@ export const prompts: Prompt[] = [
     tasks: ["Code Review", "Analysis", "Technical"],
     createdBy: "Isenberg",
     rating: 4.8,
-    createdAt: "2023-11-15T10:30:00Z"
+    createdAt: "2023-11-15T10:30:00Z",
+    views: 0
   },
   {
     id: "2",
@@ -22,7 +22,8 @@ export const prompts: Prompt[] = [
     tasks: ["Writing", "Creative", "Communication"],
     createdBy: "Isenberg",
     rating: 4.7,
-    createdAt: "2023-10-22T14:15:00Z"
+    createdAt: "2023-10-22T14:15:00Z",
+    views: 0
   },
   {
     id: "3",
@@ -33,7 +34,8 @@ export const prompts: Prompt[] = [
     tasks: ["Analysis", "Creative", "Technical"],
     createdBy: "Isenberg",
     rating: 4.9,
-    createdAt: "2023-12-03T09:45:00Z"
+    createdAt: "2023-12-03T09:45:00Z",
+    views: 0
   },
   {
     id: "4",
@@ -44,7 +46,8 @@ export const prompts: Prompt[] = [
     tasks: ["Analysis", "Research", "Planning"],
     createdBy: "Isenberg",
     rating: 4.6,
-    createdAt: "2023-09-18T11:20:00Z"
+    createdAt: "2023-09-18T11:20:00Z",
+    views: 0
   },
   {
     id: "5",
@@ -55,7 +58,8 @@ export const prompts: Prompt[] = [
     tasks: ["Writing", "Technical", "Communication"],
     createdBy: "Isenberg",
     rating: 4.5,
-    createdAt: "2023-11-28T16:05:00Z"
+    createdAt: "2023-11-28T16:05:00Z",
+    views: 0
   },
   {
     id: "6",
@@ -66,7 +70,8 @@ export const prompts: Prompt[] = [
     tasks: ["Planning", "Analysis", "Communication"],
     createdBy: "Isenberg",
     rating: 4.7,
-    createdAt: "2023-10-10T08:30:00Z"
+    createdAt: "2023-10-10T08:30:00Z",
+    views: 0
   },
   {
     id: "7",
@@ -77,7 +82,8 @@ export const prompts: Prompt[] = [
     tasks: ["Creative", "Writing"],
     createdBy: "Isenberg",
     rating: 4.9,
-    createdAt: "2023-12-15T13:25:00Z"
+    createdAt: "2023-12-15T13:25:00Z",
+    views: 0
   },
   {
     id: "8",
@@ -88,7 +94,8 @@ export const prompts: Prompt[] = [
     tasks: ["Writing", "Communication"],
     createdBy: "Isenberg",
     rating: 4.4,
-    createdAt: "2023-11-05T17:10:00Z"
+    createdAt: "2023-11-05T17:10:00Z",
+    views: 0
   },
   {
     id: "9",
@@ -99,7 +106,8 @@ export const prompts: Prompt[] = [
     tasks: ["Analysis", "Research", "Planning"],
     createdBy: "Isenberg",
     rating: 4.8,
-    createdAt: "2023-09-30T10:40:00Z"
+    createdAt: "2023-09-30T10:40:00Z",
+    views: 0
   },
   {
     id: "10",
@@ -110,7 +118,8 @@ export const prompts: Prompt[] = [
     tasks: ["Analysis", "Research", "Technical"],
     createdBy: "Isenberg",
     rating: 4.6,
-    createdAt: "2023-11-20T15:50:00Z"
+    createdAt: "2023-11-20T15:50:00Z",
+    views: 0
   },
   {
     id: "11",
@@ -121,7 +130,8 @@ export const prompts: Prompt[] = [
     tasks: ["Analysis", "Technical", "Code Review"],
     createdBy: "Isenberg",
     rating: 4.9,
-    createdAt: "2023-10-05T11:15:00Z"
+    createdAt: "2023-10-05T11:15:00Z",
+    views: 0
   },
   {
     id: "12",
@@ -132,77 +142,81 @@ export const prompts: Prompt[] = [
     tasks: ["Planning", "Creative", "Writing"],
     createdBy: "Isenberg",
     rating: 4.7,
-    createdAt: "2023-12-08T09:35:00Z"
+    createdAt: "2023-12-08T09:35:00Z",
+    views: 0
   },
-  
-    {
-      id: "13",
-      title: "Understand a Complex Topic",
-      description: "Students often struggle to grasp abstract or heavy concepts, especially in STEM or theory-heavy subjects.",
-      content: "You are an expert [subject] tutor who explains difficult concepts to high-school and early college students in simple, relatable language. Explain the concept of [insert topic] in a step-by-step format, using real-life analogies where possible. Keep the tone friendly but informative, like a YouTube explainer. Use bullet points or numbered steps.",
-      roles: ["College Student"],
-      tasks: ["Analysis", "Learning"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    },
-    {
-      id: "14",
-      title: "Summarize a Long Text or Chapter",
-      description: "When deadlines loom, students need quick, distilled versions of textbooks or handouts to revise fast.",
-      content: "Act as a summarizer for college students. Break down [insert topic or text] into sections like Key Concepts, Definitions, Dates, and Exam Points. Make it easy to revise, bullet-friendly, and structured.",
-      roles: ["College Student"],
-      tasks: ["Analysis", "Learning"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    },
-    {
-      id: "15",
-      title: "Create a Presentation",
-      description: "Presentations are a major part of internal assessments and viva voce. Students often don’t know where to begin.",
-      content: "You're an academic content designer. Make a 7-slide PowerPoint for [insert topic] with titles, bullets, and speaker notes. Follow a clean flow: Intro → Background → Main Points → Case Study → Conclusion.",
-      roles: ["College Student"],
-      tasks: ["Planning", "Writing"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    },
-    {
-      id: "16",
-      title: "Make Revision Notes",
-      description: "In the days before an exam, students want the essence of a topic—fast, focused, and exam-ready.",
-      content: "You're a smart study assistant. Create compact bullet-style notes on [insert topic] under headings: Definitions, Key Points, Formulas, and Visual Tricks. Make it fast to revise.",
-      roles: ["College Student"],
-      tasks: ["Planning", "Learning"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    },
-    {
-      id: "17",
-      title: "Prep for Technical Interview",
-      description: "Students heading into placements need simulated interview practice, especially for tech roles.",
-      content: "You're a senior engineer helping a student prepare. Share 5 DSA questions, 3 basic system design questions, and tips to approach them. Keep it placement-focused.",
-      roles: ["College Student"],
-      tasks: ["Technical", "Learning"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    },
-    {
-      id: "18",
-      title: "Improve Public Speaking Script",
-      description: "For debates, presentations, or open mics, students want help refining what they’re going to say out loud.",
-      content: "You're a TEDx-style speech coach. Rewrite or enhance the following speech/script: [paste draft]. Focus on improving clarity, flow, transitions, and emotional tone. Keep it impactful but still authentic to a student voice.",
-      roles: ["College Student"],
-      tasks: ["Communication", "Creative"],
-      createdBy: "Isenberg",
-      rating: 4.3,
-      createdAt: "2025-06-08T08:00:00Z"
-    }
-    
-    
+  {
+    id: "13",
+    title: "Understand a Complex Topic",
+    description: "Students often struggle to grasp abstract or heavy concepts, especially in STEM or theory-heavy subjects.",
+    content: "You are an expert [subject] tutor who explains difficult concepts to high-school and early college students in simple, relatable language. Explain the concept of [insert topic] in a step-by-step format, using real-life analogies where possible. Keep the tone friendly but informative, like a YouTube explainer. Use bullet points or numbered steps.",
+    roles: ["College Student"],
+    tasks: ["Analysis", "Learning"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  },
+  {
+    id: "14",
+    title: "Summarize a Long Text or Chapter",
+    description: "When deadlines loom, students need quick, distilled versions of textbooks or handouts to revise fast.",
+    content: "Act as a summarizer for college students. Break down [insert topic or text] into sections like Key Concepts, Definitions, Dates, and Exam Points. Make it easy to revise, bullet-friendly, and structured.",
+    roles: ["College Student"],
+    tasks: ["Analysis", "Learning"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  },
+  {
+    id: "15",
+    title: "Create a Presentation",
+    description: "Presentations are a major part of internal assessments and viva voce. Students often don’t know where to begin.",
+    content: "You're an academic content designer. Make a 7-slide PowerPoint for [insert topic] with titles, bullets, and speaker notes. Follow a clean flow: Intro → Background → Main Points → Case Study → Conclusion.",
+    roles: ["College Student"],
+    tasks: ["Planning", "Writing"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  },
+  {
+    id: "16",
+    title: "Make Revision Notes",
+    description: "In the days before an exam, students want the essence of a topic—fast, focused, and exam-ready.",
+    content: "You're a smart study assistant. Create compact bullet-style notes on [insert topic] under headings: Definitions, Key Points, Formulas, and Visual Tricks. Make it fast to revise.",
+    roles: ["College Student"],
+    tasks: ["Planning", "Learning"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  },
+  {
+    id: "17",
+    title: "Prep for Technical Interview",
+    description: "Students heading into placements need simulated interview practice, especially for tech roles.",
+    content: "You're a senior engineer helping a student prepare. Share 5 DSA questions, 3 basic system design questions, and tips to approach them. Keep it placement-focused.",
+    roles: ["College Student"],
+    tasks: ["Technical", "Learning"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  },
+  {
+    id: "18",
+    title: "Improve Public Speaking Script",
+    description: "For debates, presentations, or open mics, students want help refining what they’re going to say out loud.",
+    content: "You're a TEDx-style speech coach. Rewrite or enhance the following speech/script: [paste draft]. Focus on improving clarity, flow, transitions, and emotional tone. Keep it impactful but still authentic to a student voice.",
+    roles: ["College Student"],
+    tasks: ["Communication", "Creative"],
+    createdBy: "Isenberg",
+    rating: 4.3,
+    createdAt: "2025-06-08T08:00:00Z",
+    views: 0
+  }
 ];
 
 export const getRolePrompts = (role: Role): Prompt[] => {
