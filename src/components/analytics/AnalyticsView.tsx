@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
   Bar, 
   BarChart, 
@@ -16,71 +16,121 @@ import {
   Cell
 } from "recharts";
 import { TabsList } from "@/components/ui/TabsList";
-import { TabItem } from "@/types";
+import { TabItem, PromptDB } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { prompts } from "@/data/prompts";
+import { useAuth } from "@/context/AuthContext";
+import { fetchPrompts } from "@/utils/supabasePromptUtils";
 
-const usageData = [
-  { name: 'Jan', Developer: 120, Designer: 110, Marketer: 80, Writer: 90 },
-  { name: 'Feb', Developer: 132, Designer: 123, Marketer: 90, Writer: 85 },
-  { name: 'Mar', Developer: 145, Designer: 140, Marketer: 105, Writer: 100 },
-  { name: 'Apr', Developer: 160, Designer: 150, Marketer: 110, Writer: 120 },
-  { name: 'May', Developer: 170, Designer: 160, Marketer: 125, Writer: 130 },
-  { name: 'Jun', Developer: 185, Designer: 170, Marketer: 140, Writer: 145 },
-];
-
-const roleDistributionData = [
-  { name: 'Developer', value: prompts.filter(p => p.roles.includes('Developer')).length },
-  { name: 'Designer', value: prompts.filter(p => p.roles.includes('Designer')).length },
-  { name: 'Marketer', value: prompts.filter(p => p.roles.includes('Marketer')).length },
-  { name: 'Writer', value: prompts.filter(p => p.roles.includes('Writer')).length },
-  { name: 'Analyst', value: prompts.filter(p => p.roles.includes('Analyst')).length },
-  { name: 'Manager', value: prompts.filter(p => p.roles.includes('Manager')).length },
-];
-
-const taskDistributionData = [
-  { name: 'Writing', value: prompts.filter(p => p.tasks.includes('Writing')).length },
-  { name: 'Analysis', value: prompts.filter(p => p.tasks.includes('Analysis')).length },
-  { name: 'Code Review', value: prompts.filter(p => p.tasks.includes('Code Review')).length },
-  { name: 'Creative', value: prompts.filter(p => p.tasks.includes('Creative')).length },
-  { name: 'Technical', value: prompts.filter(p => p.tasks.includes('Technical')).length },
-  { name: 'Planning', value: prompts.filter(p => p.tasks.includes('Planning')).length },
-];
-
-const ratingData = [
-  { name: '≥ 4.8', count: prompts.filter(p => p.rating >= 4.8).length },
-  { name: '4.5-4.7', count: prompts.filter(p => p.rating >= 4.5 && p.rating < 4.8).length },
-  { name: '4.0-4.4', count: prompts.filter(p => p.rating >= 4.0 && p.rating < 4.5).length },
-  { name: '< 4.0', count: prompts.filter(p => p.rating < 4.0).length },
-];
-
-const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#0ea5e9', '#10b981'];
+const CHART_COLORS = ['#fb923c', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#6366f1'];
 
 export default function AnalyticsView() {
+  const { user } = useAuth();
+  const [myPrompts, setMyPrompts] = useState<PromptDB[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    if (!user) {
+      setMyPrompts([]);
+      setLoading(false);
+      return;
+    }
+    fetchPrompts().then((allPrompts) => {
+      const userPrompts = allPrompts.filter(p => p.created_by === user.id);
+      setMyPrompts(userPrompts);
+      setLoading(false);
+    });
+  }, [user]);
+
+  // Build analytics based on user's own prompts
+  const totalPrompts = myPrompts.length;
+  const totalViews = myPrompts.reduce((sum, prompt) => sum + (prompt.views || 0), 0);
+  const totalRatings = myPrompts.reduce((sum, prompt) => sum + (prompt.ratings_count || 0), 0);
+  const totalCopies = myPrompts.reduce((sum, prompt) => sum + (prompt.views || 0), 0); // counting views as copies for now, unless separate
+  const averageRating = totalPrompts > 0
+    ? (myPrompts.reduce((sum, prompt) => sum + (prompt.avg_rating || 0), 0) / totalPrompts).toFixed(2)
+    : "0.00";
+
+  // Generate role and task distribution just for your prompts
+  const roleSet = new Set(myPrompts.flatMap(p => p.roles || []));
+  const taskSet = new Set(myPrompts.flatMap(p => p.tasks || []));
+  const roleDistributionData = Array.from(roleSet).map(role => ({
+    name: role,
+    value: myPrompts.filter(p => (p.roles || []).includes(role)).length,
+  }));
+  const taskDistributionData = Array.from(taskSet).map(task => ({
+    name: task,
+    value: myPrompts.filter(p => (p.tasks || []).includes(task)).length,
+  }));
+
+  // Example: usageData is monthly prompts created over last 6 months
+  // Fake sample data; in production, you'd use created_at date and aggregate
+  const usageData = [
+    { name: 'Jan', Count: 0 },
+    { name: 'Feb', Count: 0 },
+    { name: 'Mar', Count: 0 },
+    { name: 'Apr', Count: 0 },
+    { name: 'May', Count: 0 },
+    { name: 'Jun', Count: 0 },
+  ];
+  myPrompts.forEach(prompt => {
+    const month = new Date(prompt.created_at).toLocaleString('default', { month: 'short' });
+    const idx = usageData.findIndex(u => u.name === month);
+    if (idx >= 0) usageData[idx].Count += 1;
+  });
+
+  // Ratings distribution (according to your prompts' ratings)
+  const ratingData = [
+    { name: '≥ 4.8', count: myPrompts.filter(p => p.avg_rating >= 4.8).length },
+    { name: '4.5-4.7', count: myPrompts.filter(p => p.avg_rating >= 4.5 && p.avg_rating < 4.8).length },
+    { name: '4.0-4.4', count: myPrompts.filter(p => p.avg_rating >= 4.0 && p.avg_rating < 4.5).length },
+    { name: '< 4.0', count: myPrompts.filter(p => p.avg_rating < 4.0).length },
+  ];
+
   const analyticsTabs: TabItem[] = [
     { id: '1', label: 'Overview', value: 'overview', count: 4 },
     { id: '2', label: 'Usage Trends', value: 'usage', count: 1 },
     { id: '3', label: 'Prompt Distribution', value: 'distribution', count: 2 },
     { id: '4', label: 'Ratings', value: 'ratings', count: 1 },
   ];
-  
+
   const [activeTab, setActiveTab] = useState('overview');
-  
+
+  if (loading) {
+    return <div className="p-4">Loading your prompt analytics...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="p-4 text-center text-lg">
+        Please sign in to see your prompt analytics.
+      </div>
+    );
+  }
+
+  if (myPrompts.length === 0) {
+    return (
+      <div className="p-4 text-center text-lg">
+        You haven't created any prompts yet.
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Analytics</h1>
+        <h1 className="text-3xl font-bold mb-2">Your Prompt Analytics</h1>
         <p className="text-muted-foreground">
-          Insights and statistics about prompt usage and performance.
+          Insights and statistics about your prompt usage and performance.
         </p>
       </div>
-      
+
       <TabsList
         tabs={analyticsTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      
+
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger-animation">
           <Card>
@@ -90,13 +140,13 @@ export default function AnalyticsView() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{prompts.length}</div>
+              <div className="text-3xl font-bold">{totalPrompts}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Across all roles and tasks
+                Across your roles and tasks
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -105,14 +155,14 @@ export default function AnalyticsView() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {prompts.reduce((sum, prompt) => sum + prompt.views, 0)}
+                {totalViews}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                All-time prompt views
+                All-time prompt views (yours)
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -121,14 +171,14 @@ export default function AnalyticsView() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {(prompts.reduce((sum, prompt) => sum + prompt.rating, 0) / prompts.length).toFixed(1)}
+                {averageRating}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                From all prompt ratings
+                From your prompt ratings
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -138,17 +188,16 @@ export default function AnalyticsView() {
             <CardContent>
               <div className="text-3xl font-bold">{roleDistributionData.length}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Professional categories
+                Your professional categories
               </p>
             </CardContent>
           </Card>
 
-          {/* Main charts */}
           <Card className="col-span-full md:col-span-2">
             <CardHeader>
               <CardTitle>Usage Trends</CardTitle>
               <CardDescription>
-                Prompt usage by professional role over the last 6 months
+                Prompts you created over the last 6 months
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-4">
@@ -160,21 +209,18 @@ export default function AnalyticsView() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="Developer" stroke="#6366f1" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Designer" stroke="#8b5cf6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Marketer" stroke="#ec4899" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Writer" stroke="#f97316" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Count" stroke="#fb923c" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="col-span-full md:col-span-2">
             <CardHeader>
               <CardTitle>Prompt Ratings Distribution</CardTitle>
               <CardDescription>
-                Number of prompts by rating categories
+                Your prompts by rating categories
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-4">
@@ -186,18 +232,18 @@ export default function AnalyticsView() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="count" fill="#8b5cf6" />
+                    <Bar dataKey="count" fill="#fb923c" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="col-span-full lg:col-span-2">
             <CardHeader>
               <CardTitle>Distribution by Role</CardTitle>
               <CardDescription>
-                Number of prompts available for each role
+                Number of your prompts available for each role
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -210,7 +256,7 @@ export default function AnalyticsView() {
                       cy="50%"
                       innerRadius={60}
                       outerRadius={80}
-                      fill="#8884d8"
+                      fill="#fb923c"
                       paddingAngle={5}
                       dataKey="value"
                       label
@@ -226,12 +272,12 @@ export default function AnalyticsView() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="col-span-full lg:col-span-2">
             <CardHeader>
               <CardTitle>Distribution by Task</CardTitle>
               <CardDescription>
-                Number of prompts available for each task type
+                Number of your prompts available for each task type
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -244,7 +290,7 @@ export default function AnalyticsView() {
                       cy="50%"
                       innerRadius={60}
                       outerRadius={80}
-                      fill="#8884d8"
+                      fill="#fb923c"
                       paddingAngle={5}
                       dataKey="value"
                       label
@@ -262,14 +308,14 @@ export default function AnalyticsView() {
           </Card>
         </div>
       )}
-      
+
       {activeTab === 'usage' && (
         <div className="animate-fade-in">
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Monthly Usage Trends</CardTitle>
               <CardDescription>
-                Prompt usage by professional role over the last 6 months
+                Your prompt creation trend over the last 6 months
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-4">
@@ -281,10 +327,7 @@ export default function AnalyticsView() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="Developer" stroke="#6366f1" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Designer" stroke="#8b5cf6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Marketer" stroke="#ec4899" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Writer" stroke="#f97316" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Count" stroke="#fb923c" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -292,14 +335,14 @@ export default function AnalyticsView() {
           </Card>
         </div>
       )}
-      
+
       {activeTab === 'distribution' && (
         <div className="grid grid-cols-1 gap-8 animate-fade-in">
           <Card>
             <CardHeader>
               <CardTitle>Distribution by Role</CardTitle>
               <CardDescription>
-                Number of prompts available for each role
+                Number of your prompts for each role
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -311,18 +354,18 @@ export default function AnalyticsView() {
                     <YAxis type="category" dataKey="name" />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="value" fill="#8b5cf6" />
+                    <Bar dataKey="value" fill="#fb923c" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Distribution by Task</CardTitle>
               <CardDescription>
-                Number of prompts available for each task type
+                Number of your prompts for each task type
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -334,7 +377,7 @@ export default function AnalyticsView() {
                     <YAxis type="category" dataKey="name" />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="value" fill="#ec4899" />
+                    <Bar dataKey="value" fill="#fb923c" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -342,14 +385,14 @@ export default function AnalyticsView() {
           </Card>
         </div>
       )}
-      
+
       {activeTab === 'ratings' && (
         <div className="animate-fade-in">
           <Card>
             <CardHeader>
               <CardTitle>Prompt Ratings Distribution</CardTitle>
               <CardDescription>
-                Number of prompts by rating categories
+                Your prompts by rating categories
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -361,7 +404,7 @@ export default function AnalyticsView() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="count" fill="#8b5cf6" />
+                    <Bar dataKey="count" fill="#fb923c" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
