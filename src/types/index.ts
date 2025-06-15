@@ -1,3 +1,4 @@
+
 export type Role = 
   | "Developer" 
   | "Designer" 
@@ -54,6 +55,7 @@ export interface PromptDB {
   views: number;
   avg_rating: number;
   ratings_count: number;
+  sample_output?: string | null; // <-- Fix: add sample_output here (nullable, optional)
 }
 
 export interface PromptRatingDB {
@@ -79,3 +81,4 @@ export interface ViewPromptAnalytics {
   total_views: number;
   total_copies: number;
 }
+
