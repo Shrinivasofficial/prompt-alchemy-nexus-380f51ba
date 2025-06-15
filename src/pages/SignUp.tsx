@@ -4,24 +4,55 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, User } from "lucide-react";
+import { User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function SignUp() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (!username || username.length < 2) {
+      setError("Username must be at least 2 characters.");
+      return;
+    }
     if (password.length < 3) {
       setError("Password must be at least 3 characters.");
       return;
     }
+
     const success = await signUp(email, password);
     if (success) {
-      navigate("/dashboard");
+      // Retrieve current session so we have the user id
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (user) {
+        // Insert profile into "profiles" table
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert([
+            {
+              id: user.id,
+              email: user.email,
+              username,
+            },
+          ]);
+        if (profileError) {
+          setError("Signed up, but failed to save username: " + profileError.message);
+          // Optionally let user continue
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        setError("Signup succeeded, but user not found. Try signing in.");
+      }
     } else {
       setError("Email already in use. Please use another or sign in.");
     }
@@ -33,12 +64,24 @@ export default function SignUp() {
         <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
           <User className="h-6 w-6 text-primary" /> Sign Up
         </h1>
-        <p className="mb-6 text-muted-foreground">Create an account to access all prompts and features.</p>
+        <p className="mb-6 text-muted-foreground">
+          Create an account to access all prompts and features.
+        </p>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <Input
-              type="email"
+              type="text"
               autoFocus
+              placeholder="Username"
+              value={username}
+              required
+              minLength={2}
+              onChange={e => setUsername(e.target.value)}
+            />
+          </div>
+          <div>
+            <Input
+              type="email"
               placeholder="Email"
               value={email}
               required
@@ -58,7 +101,9 @@ export default function SignUp() {
           {error && (
             <div className="text-destructive text-sm">{error}</div>
           )}
-          <Button type="submit" size="lg" className="w-full">Sign Up</Button>
+          <Button type="submit" size="lg" className="w-full">
+            Sign Up
+          </Button>
         </form>
         <div className="mt-4 text-sm text-muted-foreground text-center">
           Already have an account?{" "}
