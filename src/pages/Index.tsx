@@ -38,6 +38,12 @@ const Index = () => {
             <Link to="/contact" className="text-sm font-medium hover-underline">
               Contact
             </Link>
+            {/* Add Profile link for logged-in users */}
+            {user && (
+              <Link to="/profile" className="text-sm font-medium hover-underline">
+                Profile
+              </Link>
+            )}
           </nav>
           
           <div className="flex items-center gap-4">
@@ -57,9 +63,17 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <Button variant="outline" className="hidden md:flex" onClick={signOut}>
-                Sign Out
-              </Button>
+              <>
+                {/* Profile button (mobile and desktop), visible only when logged in */}
+                <Button asChild variant="outline" className="hidden md:flex" >
+                  <Link to="/profile">
+                    Profile
+                  </Link>
+                </Button>
+                <Button variant="outline" className="hidden md:flex" onClick={signOut}>
+                  Sign Out
+                </Button>
+              </>
             )}
             <Button asChild variant="outline" className="md:hidden">
               <Link to="/dashboard">Menu</Link>
