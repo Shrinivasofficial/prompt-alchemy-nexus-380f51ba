@@ -13,7 +13,7 @@ const UserAnalytics: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    fetchUserAnalytics(user.email).then(data => {
+    fetchUserAnalytics(user.id).then(data => {
       setStats(data);
 
       // Extract recently rated prompt_ids (sorted by latest)
@@ -36,9 +36,35 @@ const UserAnalytics: React.FC = () => {
   if (!user) return null;
   if (!stats) return <div>Loading analytics...</div>;
 
-  // Analytics: total prompts contributed, copied, etc.
-  const totalContributed = stats.contributedCount;
-  const copies = stats.viewsData.filter((v: any) => v.copied).length;
+  // Compute aggregates for the user's contributed prompts
+  const promptStatsOwned = (stats.promptStats || []).filter(
+    (s: any) =>
+      stats.contributedPromptIds && stats.contributedPromptIds.includes(s.prompt_id)
+  );
+
+  const totalContributed = stats.contributedCount || 0;
+  const totalCopies = promptStatsOwned.reduce(
+    (sum: number, stat: any) => sum + (stat.total_copies || 0),
+    0
+  );
+  const totalViews = promptStatsOwned.reduce(
+    (sum: number, stat: any) => sum + (stat.total_views || 0),
+    0
+  );
+  const totalRatings = promptStatsOwned.reduce(
+    (sum: number, stat: any) => sum + (stat.ratings_count || 0),
+    0
+  );
+  const avgRating =
+    promptStatsOwned.length > 0
+      ? (
+          promptStatsOwned.reduce(
+            (sum: number, stat: any) =>
+              sum + ((Number(stat.avg_rating) || 0) * (Number(stat.ratings_count) || 0)),
+            0
+          ) / Math.max(1, totalRatings)
+        ).toFixed(2)
+      : "0.00";
 
   return (
     <Card className="p-6 mb-6 flex flex-col gap-4 border">
@@ -52,8 +78,20 @@ const UserAnalytics: React.FC = () => {
           <div className="text-xs text-muted-foreground">Prompts Contributed</div>
         </div>
         <div>
-          <div className="text-lg font-bold">{copies}</div>
-          <div className="text-xs text-muted-foreground">Prompts Copied</div>
+          <div className="text-lg font-bold">{totalCopies}</div>
+          <div className="text-xs text-muted-foreground">Copies of Your Prompts</div>
+        </div>
+        <div>
+          <div className="text-lg font-bold">{totalViews}</div>
+          <div className="text-xs text-muted-foreground">Views of Your Prompts</div>
+        </div>
+        <div>
+          <div className="text-lg font-bold">{avgRating}</div>
+          <div className="text-xs text-muted-foreground">Avg. Rating (Your Prompts)</div>
+        </div>
+        <div>
+          <div className="text-lg font-bold">{totalRatings}</div>
+          <div className="text-xs text-muted-foreground"># Ratings (Your Prompts)</div>
         </div>
       </div>
 

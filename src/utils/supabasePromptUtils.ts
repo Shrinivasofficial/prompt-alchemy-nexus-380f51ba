@@ -1,4 +1,3 @@
-
 // Fixed for missing generated Supabase types
 
 import { supabase } from "@/integrations/supabase/client";
@@ -70,27 +69,30 @@ export const logPromptCopy = async (prompt_id: string, user_id: string) => {
 
 // Fetch prompt analytics for a user (by uuid)
 export const fetchUserAnalytics = async (user_id: string) => {
-  // prompts contributed
-  const { count: contributedCount } = await (supabase as any)
+  // get prompts contributed by user
+  const { data: contributedPrompts, count: contributedCount } = await (supabase as any)
     .from("prompts")
-    .select("id", { count: "exact", head: true })
+    .select("id", { count: "exact", head: false })
     .eq("created_by", user_id);
 
-  // prompt copies/views by user
+  const contributedPromptIds = (contributedPrompts || []).map((p: any) => p.id);
+
+  // prompt copies/views by user (their own activity)
   const { data: viewsData } = await (supabase as any)
     .from("prompt_views")
-    .select("prompt_id, copied")
+    .select("prompt_id, copied, rating, created_at")
     .eq("user_id", user_id);
 
-  // stats for prompts contributed
+  // stats for all prompts (aggregate)
   const { data: promptStats } = await (supabase as any)
     .from("view_prompt_analytics")
     .select("*");
 
   return {
     contributedCount: contributedCount || 0,
+    contributedPromptIds,
     viewsData: viewsData || [],
-    promptStats: promptStats || []
+    promptStats: promptStats || [],
   }
 };
 
