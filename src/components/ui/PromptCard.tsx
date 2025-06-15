@@ -22,9 +22,10 @@ interface PromptCardProps {
   prompt: PromptDB;
   analytics?: ViewPromptAnalytics;
   index?: number;
+  username?: string; // new prop for username
 }
 
-export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
+export function PromptCard({ prompt, analytics, index = 0, username }: PromptCardProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
@@ -97,7 +98,7 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
         />
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
-            {prompt.created_by}
+            {username || prompt.created_by}
           </div>
           <div className="flex gap-2">
             <PromptCardActions

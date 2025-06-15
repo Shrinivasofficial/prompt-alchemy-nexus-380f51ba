@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { fetchPrompts, fetchPromptAnalytics } from "@/utils/supabasePromptUtils";
 import { PromptCard } from "@/components/ui/PromptCard";
@@ -7,6 +6,7 @@ import PromptForm from "./PromptForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useUsernames } from "@/hooks/useUsernames";
 
 interface PromptListProps {
   refreshFlag: boolean;
@@ -27,6 +27,14 @@ const PromptList: React.FC<PromptListProps> = ({
   const [analytics, setAnalytics] = useState<Record<string, ViewPromptAnalytics>>({});
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+
+  // Pull all unique user ids from loaded prompts for username display
+  const userIds = prompts
+    .map((p) => p.created_by)
+    .filter((v, i, arr) => !!v && arr.indexOf(v) === i);
+
+  // Fetch usernames corresponding to created_by
+  const usernames = useUsernames(userIds);
 
   // Refetch data if prompt was added
   const fetchAll = () => {
@@ -91,6 +99,7 @@ const PromptList: React.FC<PromptListProps> = ({
             prompt={prompt}
             analytics={analytics[prompt.id]}
             index={idx}
+            username={usernames[prompt.created_by]}
           />
         ))}
         {prompts.length === 0 && (
