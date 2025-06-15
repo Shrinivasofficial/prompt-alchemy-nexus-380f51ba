@@ -1,14 +1,13 @@
-
 import { FileText, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
 import { useState } from "react";
-import { PromptDB, User } from "@/types";
+import { PromptDB } from "@/types";
 
 interface PromptCardActionsProps {
   prompt: PromptDB;
-  user: User | null;
+  user: { id: string; email: string } | null;
   isOwner: boolean;
   copied: boolean;
   setCopied: (v: boolean) => void;
@@ -74,4 +73,3 @@ export function PromptCardActions({
     </>
   );
 }
-

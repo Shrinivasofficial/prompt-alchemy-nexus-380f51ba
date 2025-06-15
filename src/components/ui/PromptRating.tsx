@@ -1,14 +1,13 @@
-
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
-import { PromptDB, User } from "@/types";
+import { PromptDB } from "@/types";
 
 interface PromptRatingProps {
   prompt: PromptDB;
-  user: User | null;
+  user: { id: string; email: string } | null;
   myRating: number | null;
   setMyRating: (rating: number) => void;
   loadingRating: boolean;
@@ -66,4 +65,3 @@ export function PromptRating({
     </div>
   );
 }
-
