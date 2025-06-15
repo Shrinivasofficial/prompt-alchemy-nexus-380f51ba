@@ -9,10 +9,141 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      prompt_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          prompt_id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prompt_id: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prompt_id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_ratings_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_ratings_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "view_prompt_analytics"
+            referencedColumns: ["prompt_id"]
+          },
+        ]
+      }
+      prompt_views: {
+        Row: {
+          copied: boolean
+          created_at: string
+          id: string
+          prompt_id: string
+          user_id: string
+        }
+        Insert: {
+          copied?: boolean
+          created_at?: string
+          id?: string
+          prompt_id: string
+          user_id: string
+        }
+        Update: {
+          copied?: boolean
+          created_at?: string
+          id?: string
+          prompt_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_views_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_views_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "view_prompt_analytics"
+            referencedColumns: ["prompt_id"]
+          },
+        ]
+      }
+      prompts: {
+        Row: {
+          avg_rating: number
+          content: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          ratings_count: number
+          roles: string[]
+          sample_output: string | null
+          tasks: string[]
+          title: string
+          views: number
+        }
+        Insert: {
+          avg_rating?: number
+          content: string
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          ratings_count?: number
+          roles: string[]
+          sample_output?: string | null
+          tasks: string[]
+          title: string
+          views?: number
+        }
+        Update: {
+          avg_rating?: number
+          content?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          ratings_count?: number
+          roles?: string[]
+          sample_output?: string | null
+          tasks?: string[]
+          title?: string
+          views?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      view_prompt_analytics: {
+        Row: {
+          avg_rating: number | null
+          prompt_id: string | null
+          ratings_count: number | null
+          total_copies: number | null
+          total_views: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

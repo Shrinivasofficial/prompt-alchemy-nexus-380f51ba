@@ -34,7 +34,7 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
   // Fetch user's own rating
   useEffect(() => {
     if (user) {
-      utils.getUserPromptRating(prompt.id, user.email).then(r => setMyRating(r?.rating || null));
+      utils.getUserPromptRating(prompt.id, user.id).then(r => setMyRating(r?.rating || null));
     }
   }, [user, prompt.id]);
 
@@ -47,7 +47,7 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
         description: "Prompt content has been copied to your clipboard",
         duration: 2000,
       });
-      if (user) await utils.logPromptCopy(prompt.id, user.email);
+      if (user) await utils.logPromptCopy(prompt.id, user.id);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error("Failed to copy text: ", error);
@@ -68,7 +68,7 @@ export function PromptCard({ prompt, analytics, index = 0 }: PromptCardProps) {
     }
     setLoadingRating(true);
     try {
-      await utils.ratePrompt(prompt.id, user.email, rating);
+      await utils.ratePrompt(prompt.id, user.id, rating);
       setMyRating(rating);
       toast({ title: "Rated!", duration: 1300 });
     } catch (e) {

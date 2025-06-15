@@ -67,8 +67,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
           content,
           roles,
           tasks,
+          sample_output: sample || null,
         },
-        user.email
+        user.id // Pass user.id as UUID!
       );
       toast({ title: "Prompt added successfully!", duration: 2000, variant: "default" });
       setTitle("");

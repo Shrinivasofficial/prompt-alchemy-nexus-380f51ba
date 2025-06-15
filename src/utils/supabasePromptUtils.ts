@@ -16,10 +16,13 @@ export const fetchPrompts = async (): Promise<PromptDB[]> => {
 };
 
 // Add a new prompt
-export const createPrompt = async (prompt: Omit<PromptDB, "id" | "created_by" | "created_at" | "views" | "avg_rating" | "ratings_count">, userId: string) => {
+export const createPrompt = async (
+  prompt: Omit<PromptDB, "id" | "created_by" | "created_at" | "views" | "avg_rating" | "ratings_count"> & { sample_output?: string | null },
+  userUuid: string
+) => {
   const { data, error } = await (supabase as any)
     .from("prompts")
-    .insert([{ ...prompt, created_by: userId }])
+    .insert([{ ...prompt, created_by: userUuid }])
     .select()
     .single();
 
@@ -27,7 +30,7 @@ export const createPrompt = async (prompt: Omit<PromptDB, "id" | "created_by" | 
   return data as PromptDB;
 };
 
-// Rate a prompt (upsert for the user/prompt combination)
+// Rate a prompt (upsert for the user/prompt combination) - NOW uses uuid
 export const ratePrompt = async (prompt_id: string, user_id: string, rating: number) => {
   const { data, error } = await (supabase as any)
     .from("prompt_ratings")
@@ -38,7 +41,7 @@ export const ratePrompt = async (prompt_id: string, user_id: string, rating: num
   return data as PromptRatingDB;
 };
 
-// Fetch current user's rating for a prompt
+// Fetch current user's rating for a prompt (by uuid)
 export const getUserPromptRating = async (prompt_id: string, user_id: string) => {
   const { data } = await (supabase as any)
     .from("prompt_ratings")
@@ -49,14 +52,14 @@ export const getUserPromptRating = async (prompt_id: string, user_id: string) =>
   return data as PromptRatingDB | null;
 };
 
-// Log prompt copy/view action
+// Log prompt copy/view action (by uuid)
 export const logPromptCopy = async (prompt_id: string, user_id: string) => {
   await (supabase as any).from("prompt_views").insert([
     { prompt_id, user_id, copied: true }
   ]);
 };
 
-// Fetch prompt analytics for a user
+// Fetch prompt analytics for a user (by uuid)
 export const fetchUserAnalytics = async (user_id: string) => {
   // prompts contributed
   const { count: contributedCount } = await (supabase as any)

@@ -1,9 +1,8 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextProps {
-  user: { email: string } | null;
+  user: { id: string; email: string } | null;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<boolean>;
   signOut: () => void;
@@ -17,17 +16,25 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
 
   useEffect(() => {
     // Listen to Auth changes and set the user state accordingly.
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ? { email: session.user.email ?? "" } : null);
+      setUser(
+        session?.user
+          ? { id: session.user.id, email: session.user.email ?? "" }
+          : null
+      );
     });
 
     // On mount, fetch the current session.
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ? { email: session.user.email ?? "" } : null);
+      setUser(
+        session?.user
+          ? { id: session.user.id, email: session.user.email ?? "" }
+          : null
+      );
     });
 
     return () => {
@@ -41,7 +48,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     });
     if (!error && data?.user) {
-      setUser({ email: data.user.email ?? "" });
+      setUser({
+        id: data.user.id,
+        email: data.user.email ?? ""
+      });
       return true;
     }
     return false;
@@ -56,7 +66,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       options: { emailRedirectTo: redirectUrl },
     });
     if (!error && data?.user) {
-      setUser({ email: data.user.email ?? "" });
+      setUser({
+        id: data.user.id,
+        email: data.user.email ?? ""
+      });
       return true;
     }
     return false;
