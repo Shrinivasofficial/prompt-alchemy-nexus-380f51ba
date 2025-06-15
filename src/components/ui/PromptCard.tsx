@@ -100,7 +100,10 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
         />
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
-            {username || prompt.created_by}
+            {/* Show username, or fallback; never show UID */}
+            {username && username !== prompt.created_by
+              ? username
+              : "Unknown user"}
           </div>
           <div className="flex gap-2">
             <PromptCardActions

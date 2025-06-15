@@ -17,13 +17,14 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
     e.preventDefault();
     setNotification("");
     setLoading(true);
-    const redirectTo = `${window.location.origin}/signin`;
+    // Set correct redirectTo (must match allowed password reset URLs in Supabase dashboard!)
+    const redirectTo = window.location.origin + "/signin";
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     setLoading(false);
     if (error) {
-      setNotification("Failed to send email. Try again.");
+      setNotification("Failed to send email. Make sure your email exists and the redirect URL is allowed in your Supabase Auth settings.");
     } else {
-      setNotification("Reset link sent. Please check your email.");
+      setNotification("Reset link sent. Please check your email and follow the instructions to reset your password.");
     }
   }
 

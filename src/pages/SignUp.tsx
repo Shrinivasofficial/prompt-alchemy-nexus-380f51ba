@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -21,7 +20,6 @@ export default function SignUp() {
     e.preventDefault();
     setError("");
     setInfo("");
-
     if (!username || username.length < 2) {
       setError("Username must be at least 2 characters.");
       return;
@@ -30,22 +28,20 @@ export default function SignUp() {
       setError("Password must be at least 3 characters.");
       return;
     }
-
     const success = await signUp(email, password);
     if (success) {
       // Retrieve current session so we have the user id
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;
       if (user) {
-        // Upsert profile into "profiles" table
+        // Ensure profile row (will not overwrite existing one)
         await supabase
           .from("profiles")
           .upsert([
               { id: user.id, email: user.email, username }
             ],
-            { onConflict: "id" }
+            { onConflict: "id", ignoreDuplicates: false }
           );
-        // Email confirmation may be required
         setInfo("Sign up successful! Please check your email and verify your account before signing in.");
       } else {
         setInfo("Sign up successful! Please check your email and verify your account before signing in.");
