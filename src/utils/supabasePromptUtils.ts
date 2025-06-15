@@ -111,3 +111,13 @@ export const fetchPromptAnalytics = async (): Promise<ViewPromptAnalytics[]> => 
     .select("*");
   return (data || []) as ViewPromptAnalytics[];
 };
+
+// Delete a prompt by id
+export const deletePrompt = async (prompt_id: string) => {
+  const { error } = await (supabase as any)
+    .from("prompts")
+    .delete()
+    .eq("id", prompt_id);
+  if (error) throw error;
+  return true;
+};

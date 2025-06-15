@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import PromptEditForm from "@/components/ui/PromptEditForm";
 
 interface PromptCardProps {
   prompt: PromptDB;
@@ -33,6 +34,7 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
   const [showUsage, setShowUsage] = useState(false);
   const [myRating, setMyRating] = useState<number | null>(null);
   const [loadingRating, setLoadingRating] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   // Is the current user the owner of this prompt?
   const isOwner = user && prompt.created_by === user.id;
@@ -108,6 +110,8 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
               copied={copied}
               setCopied={setCopied}
               setShowUsage={setShowUsage}
+              onEdit={() => setShowEdit(true)}
+              onDelete={() => window.location.reload()}
             />
           </div>
         </div>
@@ -153,6 +157,15 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
           </div>
         </DialogContent>
       </Dialog>
+      <PromptEditForm
+        prompt={prompt}
+        open={showEdit}
+        onOpenChange={setShowEdit}
+        onUpdated={() => {
+          setShowEdit(false);
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
