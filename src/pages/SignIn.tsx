@@ -30,11 +30,18 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-card rounded-xl shadow-lg p-8 w-full max-w-sm animate-fade-in">
-        <h2 className="text-2xl font-extrabold text-primary mb-1">Forgot Password?</h2>
-        <p className="mb-5 text-muted-foreground text-sm">Enter your email to receive a password reset link:</p>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[1.5px] animate-fade-in">
+      <div className="bg-card shadow-2xl rounded-2xl px-8 py-7 w-full max-w-sm flex flex-col animate-fade-in border border-muted min-w-[340px] sm:min-w-[400px]">
+        <div className="flex flex-col items-center gap-1 mb-4">
+          <div className="flex items-center justify-center bg-primary/10 text-primary rounded-full h-12 w-12 mb-2">
+            <Mail size={28} />
+          </div>
+          <h2 className="text-2xl font-bold text-primary mb-[2px]">Forgot Password?</h2>
+          <p className="text-muted-foreground text-sm text-center">
+            Enter your email to receive a password reset link.
+          </p>
+        </div>
+        <form className="space-y-3" onSubmit={handleSubmit}>
           <Input
             type="email"
             placeholder="Email address"
@@ -43,14 +50,26 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
-          <Button type="submit" className="w-full" disabled={loading} variant="default">
+          <Button
+            type="submit"
+            className="w-full text-base font-semibold py-2"
+            disabled={loading}
+            variant="default"
+          >
             {loading ? "Sending..." : "Send Reset Link"}
           </Button>
-          {notification && (
-            <div className="text-sm mt-2 text-center rounded-md p-2 bg-muted">{notification}</div>
-          )}
         </form>
-        <Button variant="link" className="mt-6 w-full text-primary" onClick={onClose}>
+        {notification && (
+          <div className={`text-center rounded-md mt-4 px-3 py-2 text-sm ${notification.startsWith('A reset link') ? "bg-green-100 text-green-700" : "bg-destructive/10 text-destructive"}`}>
+            {notification}
+          </div>
+        )}
+        <Button
+          variant="link"
+          className="mt-5 w-full text-primary text-sm"
+          onClick={onClose}
+          tabIndex={0}
+        >
           Back to Sign In
         </Button>
       </div>
@@ -120,3 +139,4 @@ export default function SignIn() {
     </AuthLayout>
   );
 }
+
