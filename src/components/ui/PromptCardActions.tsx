@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
 import { useState } from "react";
-import { PromptDB } from "@/types";
-import { User } from "@/context/AuthContext";
+import { PromptDB, User } from "@/types";
 
 interface PromptCardActionsProps {
   prompt: PromptDB;
@@ -75,3 +74,4 @@ export function PromptCardActions({
     </>
   );
 }
+

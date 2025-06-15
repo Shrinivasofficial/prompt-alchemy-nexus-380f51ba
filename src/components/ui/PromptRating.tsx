@@ -4,8 +4,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
-import { PromptDB } from "@/types";
-import { User } from "@/context/AuthContext";
+import { PromptDB, User } from "@/types";
 
 interface PromptRatingProps {
   prompt: PromptDB;
@@ -67,3 +66,4 @@ export function PromptRating({
     </div>
   );
 }
+
