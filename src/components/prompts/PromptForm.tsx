@@ -1,8 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getAllRoles, getAllTasks } from "@/data/prompts";
-import { createPrompt } from "@/utils/supabasePromptUtils";
+import { createPrompt, updatePrompt } from "@/utils/supabasePromptUtils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
@@ -10,13 +10,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { PromptDB } from "@/types";
 
 interface PromptFormProps {
   onPromptCreated?: () => void;
   postSubmitCallback?: () => void;
+  existingPrompt?: PromptDB | null;
+  isEditMode?: boolean;
 }
 
-const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCallback }) => {
+const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCallback, existingPrompt, isEditMode }) => {
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -31,6 +34,27 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
 
   // Input validation errors
   const [errors, setErrors] = useState<string[]>([]);
+
+  // Pre-fill fields if editing
+  useEffect(() => {
+    if (existingPrompt) {
+      setTitle(existingPrompt.title);
+      setDescription(existingPrompt.description);
+      setContent(existingPrompt.content);
+      setRoles(existingPrompt.roles || []);
+      setTasks(existingPrompt.tasks || []);
+      setSample(existingPrompt.sample_output || "");
+    }
+    if (!isEditMode || !existingPrompt) {
+      setTitle("");
+      setDescription("");
+      setContent("");
+      setRoles([]);
+      setTasks([]);
+      setSample("");
+    }
+    // eslint-disable-next-line
+  }, [existingPrompt, isEditMode]);
 
   if (!user) return null;
 
@@ -61,24 +85,39 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
 
     setLoading(true);
     try {
-      await createPrompt(
-        {
-          title,
-          description,
-          content,
-          roles,
-          tasks,
-          sample_output: sample || null,
-        },
-        user.id
-      );
-      toast({ title: "Prompt added successfully!", duration: 2000, variant: "default" });
-      setTitle("");
-      setRoles([]);
-      setTasks([]);
-      setDescription("");
-      setContent("");
-      setSample("");
+      if (isEditMode && existingPrompt) {
+        await updatePrompt(
+          existingPrompt.id,
+          {
+            title,
+            description,
+            content,
+            roles,
+            tasks,
+            sample_output: sample || null,
+          }
+        );
+        toast({ title: "Prompt updated successfully!", duration: 2000, variant: "default" });
+      } else {
+        await createPrompt(
+          {
+            title,
+            description,
+            content,
+            roles,
+            tasks,
+            sample_output: sample || null,
+          },
+          user.id
+        );
+        toast({ title: "Prompt added successfully!", duration: 2000, variant: "default" });
+        setTitle("");
+        setRoles([]);
+        setTasks([]);
+        setDescription("");
+        setContent("");
+        setSample("");
+      }
       setErrors([]);
       onPromptCreated && onPromptCreated();
       postSubmitCallback && postSubmitCallback();
@@ -102,7 +141,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <h2 className="text-xl font-bold mb-2">Add a Prompt</h2>
+      <h2 className="text-xl font-bold mb-2">
+        {isEditMode ? "Edit Prompt" : "Add a Prompt"}
+      </h2>
 
       {errors.length > 0 && (
         <div className="p-3 bg-red-100 border border-destructive text-destructive rounded-md text-sm">
@@ -183,9 +224,12 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
         disabled={loading || validate().length > 0}
         className="mt-2 w-full"
       >
-        {loading ? "Submitting..." : "Submit"}
+        {loading
+          ? (isEditMode ? "Updating..." : "Submitting...")
+          : (isEditMode ? "Update Prompt" : "Submit")}
       </Button>
     </form>
   );
 };
+
 export default PromptForm;

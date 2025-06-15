@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import PromptForm from "@/components/prompts/PromptForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PromptDB } from "@/types";
@@ -34,4 +34,3 @@ const PromptEditForm: React.FC<PromptEditFormProps> = ({
 };
 
 export default PromptEditForm;
-

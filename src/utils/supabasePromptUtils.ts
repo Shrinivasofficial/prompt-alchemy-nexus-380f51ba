@@ -121,3 +121,17 @@ export const deletePrompt = async (prompt_id: string) => {
   if (error) throw error;
   return true;
 };
+
+// Add the updatePrompt function
+export const updatePrompt = async (
+  prompt_id: string,
+  updates: Partial<Omit<PromptDB, "id" | "created_by" | "created_at" | "views" | "avg_rating" | "ratings_count">> & { sample_output?: string | null }
+) => {
+  const { error } = await (supabase as any)
+    .from("prompts")
+    .update({ ...updates })
+    .eq("id", prompt_id);
+
+  if (error) throw error;
+  return true;
+};
