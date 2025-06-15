@@ -7,15 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select";
 
-const PromptForm: React.FC<{ onPromptCreated: () => void }> = ({ onPromptCreated }) => {
+const PromptForm: React.FC<{ onPromptCreated?: () => void, postSubmitCallback?: () => void }> = ({ onPromptCreated, postSubmitCallback }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [title, setTitle] = useState("");
+  const [role, setRole] = useState("");
+  const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
-  const [roles, setRoles] = useState<string[]>([]);
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [sample, setSample] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (!user) return null;
@@ -28,12 +32,13 @@ const PromptForm: React.FC<{ onPromptCreated: () => void }> = ({ onPromptCreated
         title,
         description,
         content,
-        roles,
-        tasks,
+        roles: [role],
+        tasks: [task],
       }, user.email);
       toast({ title: "Prompt created!", duration: 2000 });
-      setTitle(""); setDescription(""); setContent(""); setRoles([]); setTasks([]);
-      onPromptCreated();
+      setTitle(""); setRole(""); setTask(""); setDescription(""); setContent(""); setSample("");
+      onPromptCreated && onPromptCreated();
+      postSubmitCallback && postSubmitCallback();
     } catch (error) {
       toast({ title: "Error", description: String(error), variant: "destructive" });
     } finally {
@@ -41,65 +46,71 @@ const PromptForm: React.FC<{ onPromptCreated: () => void }> = ({ onPromptCreated
     }
   };
 
-  const toggleArray = (arr: string[], setArr: (v: string[]) => void, value: string) => {
-    setArr(arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value]);
-  };
-
   return (
-    <form className="mb-8 bg-card p-6 rounded-xl shadow border space-y-4" onSubmit={handleSubmit}>
-      <h2 className="text-xl font-bold mb-2">Share a new prompt</h2>
-      <input
-        className="w-full px-3 py-2 border rounded"
-        placeholder="Title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        required
-      />
-      <Textarea
-        placeholder="Short description"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-        required
-      />
-      <Textarea
-        placeholder="Prompt content"
-        value={content}
-        onChange={e => setContent(e.target.value)}
-        required
-      />
-
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <h2 className="text-xl font-bold mb-2">Add a Prompt</h2>
       <div>
-        <span className="font-medium mb-1">Roles:</span>
-        <div className="flex flex-wrap gap-2">
-          {getAllRoles().map(role => (
-            <Badge
-              key={role}
-              variant={roles.includes(role) ? "default" : "outline"}
-              onClick={() => toggleArray(roles, setRoles, role)}
-              className="cursor-pointer"
-            >
-              {role}
-            </Badge>
-          ))}
-        </div>
+        <Label>Title</Label>
+        <Input
+          placeholder="Prompt title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          required
+        />
       </div>
-
       <div>
-        <span className="font-medium mb-1">Tasks:</span>
-        <div className="flex flex-wrap gap-2">
-          {getAllTasks().map(task => (
-            <Badge
-              key={task}
-              variant={tasks.includes(task) ? "default" : "outline"}
-              onClick={() => toggleArray(tasks, setTasks, task)}
-              className="cursor-pointer"
-            >
-              {task}
-            </Badge>
-          ))}
-        </div>
+        <Label>Role</Label>
+        <Select value={role} onValueChange={setRole} required>
+          <SelectTrigger>
+            <SelectValue placeholder="Choose role..." />
+          </SelectTrigger>
+          <SelectContent>
+            {getAllRoles().map(opt =>
+              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+            )}
+          </SelectContent>
+        </Select>
       </div>
-      <Button type="submit" disabled={loading} className="mt-2 w-full">Create Prompt</Button>
+      <div>
+        <Label>Task</Label>
+        <Select value={task} onValueChange={setTask} required>
+          <SelectTrigger>
+            <SelectValue placeholder="Choose task..." />
+          </SelectTrigger>
+          <SelectContent>
+            {getAllTasks().map(opt =>
+              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label>Description</Label>
+        <Textarea
+          placeholder="Short description"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <Label>Prompt</Label>
+        <Textarea
+          placeholder="Prompt text"
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <Label>Sample (optional)</Label>
+        <Textarea
+          placeholder="Sample output (optional)"
+          value={sample}
+          onChange={e => setSample(e.target.value)}
+        />
+      </div>
+      <Button type="submit" disabled={loading} className="mt-2 w-full">Submit</Button>
     </form>
   );
 };
