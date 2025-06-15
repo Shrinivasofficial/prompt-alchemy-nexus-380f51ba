@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,17 +29,7 @@ const App = () => {
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            {/* App header/navbar, show profile link when logged in */}
-            <header className="flex gap-4 px-4 py-3 items-center border-b border-muted bg-background">
-              <Link to="/" className="font-bold text-xl text-primary">Prompt Alchemy</Link>
-              <nav className="ml-auto flex gap-3">
-                <Link to="/about" className="text-muted-foreground hover:underline">About</Link>
-                <Link to="/contact" className="text-muted-foreground hover:underline">Contact</Link>
-                {user && (
-                  <Link to="/profile" className="font-medium text-primary hover:underline">Profile</Link>
-                )}
-              </nav>
-            </header>
+            {/* Removed App header/navbar */}
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
