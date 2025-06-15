@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextProps {
   user: { email: string } | null;
@@ -19,37 +20,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<{ email: string } | null>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Listen to Auth changes and set the user state accordingly.
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ? { email: session.user.email ?? "" } : null);
+    });
+
+    // On mount, fetch the current session.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ? { email: session.user.email ?? "" } : null);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    if (users[email] && users[email].password === password) {
-      setUser({ email });
-      localStorage.setItem("user", JSON.stringify({ email }));
+    const { error, data } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (!error && data?.user) {
+      setUser({ email: data.user.email ?? "" });
       return true;
     }
     return false;
   };
 
   const signUp = async (email: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    if (users[email]) {
-      return false;
+    // Always set a redirect URL for email confirmation
+    const redirectUrl = `${window.location.origin}/`;
+    const { error, data } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: redirectUrl },
+    });
+    if (!error && data?.user) {
+      setUser({ email: data.user.email ?? "" });
+      return true;
     }
-    users[email] = { password };
-    localStorage.setItem("users", JSON.stringify(users));
-    setUser({ email });
-    localStorage.setItem("user", JSON.stringify({ email }));
-    return true;
+    return false;
   };
 
-  const signOut = () => {
+  const signOut = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem("user");
   };
 
   return (
@@ -60,4 +75,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
