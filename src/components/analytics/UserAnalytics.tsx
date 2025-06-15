@@ -63,7 +63,7 @@ const UserAnalytics: React.FC = () => {
           <div className="text-md font-semibold mb-3">Prompts You've Recently Rated</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recentlyRatedPrompts.map((prompt, idx) => (
-              <PromptCard key={prompt.id} prompt={prompt} readonlyRating analytics={null} index={idx} />
+              <PromptCard key={prompt.id} prompt={prompt} analytics={null} index={idx} />
             ))}
           </div>
         </div>

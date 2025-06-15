@@ -52,7 +52,7 @@ const PromptList: React.FC<PromptListProps> = ({
 
   return (
     <div className="relative">
-      {/* Floating Add Prompt Button: only appear if showAddPrompt is true */}
+      {/* Floating Add Prompt Button: appear if showAddPrompt is true */}
       {showAddPrompt && (
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
@@ -66,14 +66,16 @@ const PromptList: React.FC<PromptListProps> = ({
               <span className="hidden sm:inline">Add Prompt</span>
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <PromptForm
-              onPromptCreated={() => {
-                setShowForm(false);
-                fetchAll();
-                if (onPromptCreated) onPromptCreated(); // refresh parent
-              }}
-            />
+          <DialogContent className="max-w-2xl w-full p-0 bg-background">
+            <div className="py-6 px-6">
+              <PromptForm
+                onPromptCreated={() => {
+                  setShowForm(false);
+                  fetchAll();
+                  if (onPromptCreated) onPromptCreated(); // refresh parent
+                }}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       )}

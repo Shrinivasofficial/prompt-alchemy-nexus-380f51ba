@@ -31,6 +31,10 @@ const Dashboard = () => {
 
   // Determine if on the main dashboard view (no filtering)
   const isMainDashboardView = !mode && !category;
+  // Hide add prompt in analytics view (route = "/dashboard/analytics")
+  const isAnalyticsView =
+    location.pathname.startsWith("/dashboard/analytics") ||
+    (mode === "analytics" && !category);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -54,16 +58,19 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="container mx-auto px-4 py-6">
-          {/* Only show add prompt functionality and UserAnalytics on the main dashboard */}
-          {isMainDashboardView && <PromptForm onPromptCreated={handlePromptCreated} />}
-          {!mode && !category && <UserAnalytics />}
-          <PromptList
-            refreshFlag={refreshFlag}
-            byRole={byRole}
-            byTask={byTask}
-            showAddPrompt={isMainDashboardView}
-            onPromptCreated={handlePromptCreated}
-          />
+          {/* Hide add prompt in analytics, show on main/roles/tasks */}
+          {!isAnalyticsView && (
+            <PromptList
+              refreshFlag={refreshFlag}
+              byRole={byRole}
+              byTask={byTask}
+              showAddPrompt={true}
+              onPromptCreated={handlePromptCreated}
+            />
+          )}
+          {isMainDashboardView && <UserAnalytics />}
+          {/* Only show analytics on analytics route */}
+          {isAnalyticsView && <UserAnalytics />}
         </div>
       </main>
     </div>
