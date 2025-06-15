@@ -18,6 +18,11 @@ import {
 } from "@/data/prompts";
 import Sidebar from "@/components/layout/Sidebar";
 import AnalyticsView from "@/components/analytics/AnalyticsView";
+import { useAuth } from "@/context/AuthContext";
+import { Lock } from "lucide-react";
+
+const FREE_ROLES = ["Developer", "Marketer", "Designer"];
+const FREE_TASKS = ["Writing", "Code Review", "Creative"];
 
 interface DashboardProps {
   mode?: "roles" | "tasks" | "analytics" | "settings";
@@ -110,6 +115,12 @@ const Dashboard = () => {
     }
   }, [mode, category, navigate]);
   
+  const { user } = useAuth();
+
+  // Only show these prompts if not logged in
+  const isFreeRole = (role: Role) => FREE_ROLES.includes(role);
+  const isFreeTask = (task: Task) => FREE_TASKS.includes(task);
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
@@ -233,9 +244,29 @@ const Dashboard = () => {
               
               {/* Prompt grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPrompts.map((prompt, index) => (
-                  <PromptCard key={prompt.id} prompt={prompt} index={index} />
-                ))}
+                {filteredPrompts.map((prompt, index) => {
+                  // If not logged in, lock premium prompts
+                  const isLocked = !user && (
+                    (mode === "roles" && !isFreeRole(prompt.roles[0])) ||
+                    (mode === "tasks" && !isFreeTask(prompt.tasks[0]))
+                  );
+                  return (
+                    <div className="relative" key={prompt.id}>
+                      <PromptCard prompt={prompt} index={index} />
+                      {isLocked && (
+                        <div className="absolute inset-0 z-10 bg-background/85 backdrop-blur flex items-center justify-center rounded-xl border border-primary/10">
+                          <div className="flex flex-col items-center gap-2">
+                            <Lock className="h-6 w-6 text-primary" />
+                            <span className="font-medium">Sign in to access this prompt</span>
+                            <Button asChild size="sm" className="mt-2">
+                              <Link to="/signin">Sign In</Link>
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               
               {/* Empty state */}

@@ -1,15 +1,18 @@
-
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Hero from "@/components/sections/Hero";
 import Features from "@/components/sections/Features";
+import { useAuth } from "@/context/AuthContext";
+import { LogIn, User } from "lucide-react";
 
 const Index = () => {
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const { user, signOut } = useAuth();
 
   return (
     <div>
@@ -38,10 +41,26 @@ const Index = () => {
           </nav>
           
           <div className="flex items-center gap-4">
-            <Button asChild variant="default" className="hidden md:flex bg-gradient-primary hover:opacity-90 transition-opacity">
-              <Link to="/dashboard">Get Started</Link>
-            </Button>
-            
+            {!user ? (
+              <>
+                <Button asChild variant="default" className="hidden md:flex bg-gradient-primary hover:opacity-90 transition-opacity">
+                  <Link to="/signin" className="flex items-center gap-2">
+                    <LogIn className="w-4 h-4" />
+                    Sign In
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="hidden md:flex">
+                  <Link to="/signup" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Sign Up
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" className="hidden md:flex" onClick={signOut}>
+                Sign Out
+              </Button>
+            )}
             <Button asChild variant="outline" className="md:hidden">
               <Link to="/dashboard">Menu</Link>
             </Button>
