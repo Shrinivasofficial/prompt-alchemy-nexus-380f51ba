@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { fetchPrompts, fetchPromptAnalytics } from "@/utils/supabasePromptUtils";
 import { PromptCard } from "@/components/ui/PromptCard";
@@ -7,6 +8,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useUsernames } from "@/hooks/useUsernames";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface PromptListProps {
   refreshFlag: boolean;
@@ -15,6 +18,8 @@ interface PromptListProps {
   showAddPrompt?: boolean;
   onPromptCreated?: () => void;
 }
+
+const GUEST_PROMPT_LIMIT = 3;
 
 const PromptList: React.FC<PromptListProps> = ({
   refreshFlag,
@@ -28,6 +33,10 @@ const PromptList: React.FC<PromptListProps> = ({
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isGuest = !user;
+
   // Pull all unique user ids from loaded prompts for username display
   const userIds = prompts
     .map((p) => p.created_by)
@@ -36,7 +45,7 @@ const PromptList: React.FC<PromptListProps> = ({
   // Fetch usernames corresponding to created_by
   const usernames = useUsernames(userIds);
 
-  // Refetch data if prompt was added
+  // Fetch data
   const fetchAll = () => {
     setLoading(true);
     Promise.all([fetchPrompts({ byRole, byTask }), fetchPromptAnalytics()])
@@ -56,12 +65,23 @@ const PromptList: React.FC<PromptListProps> = ({
     // eslint-disable-next-line
   }, [refreshFlag, byRole, byTask]);
 
+  // For guests, restrict prompts and disable filtering
+  useEffect(() => {
+    // If not authenticated, but asked for tasks/roles filtering, redirect to signin
+    if (isGuest && (byRole || byTask)) {
+      navigate("/signin", { replace: true });
+    }
+  }, [isGuest, byRole, byTask, navigate]);
+
   if (loading) return <div>Loading prompts...</div>;
+
+  // Guest prompt list: limit
+  const visiblePrompts = isGuest ? prompts.slice(0, GUEST_PROMPT_LIMIT) : prompts;
 
   return (
     <div className="relative">
-      {/* Floating Add Prompt Button: appear if showAddPrompt is true */}
-      {showAddPrompt && (
+      {/* Add Prompt: Only enabled for authenticated users */}
+      {showAddPrompt && !isGuest && (
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
             <Button
@@ -89,11 +109,13 @@ const PromptList: React.FC<PromptListProps> = ({
       )}
       {/* Title, always visible */}
       <div className="flex items-center justify-between mb-6 mt-4">
-        <h2 className="text-xl font-bold">All Prompts</h2>
+        <h2 className="text-xl font-bold">
+          {isGuest ? "Featured Prompts (Sign in to unlock more!)" : "All Prompts"}
+        </h2>
       </div>
       {/* Prompts feed */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        {prompts.map((prompt, idx) => (
+        {visiblePrompts.map((prompt, idx) => (
           <PromptCard
             key={prompt.id}
             prompt={prompt}
@@ -102,10 +124,23 @@ const PromptList: React.FC<PromptListProps> = ({
             username={usernames[prompt.created_by]}
           />
         ))}
-        {prompts.length === 0 && (
+        {visiblePrompts.length === 0 && (
           <div className="col-span-3 text-muted-foreground py-8 text-center">No prompts found.</div>
         )}
       </div>
+      {/* For guests: "Show more" button that routes to signin */}
+      {isGuest && prompts.length > GUEST_PROMPT_LIMIT && (
+        <div className="flex justify-center mb-8">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => navigate("/signin")}
+            className="animate-fade-in"
+          >
+            Sign in to unlock all prompts!
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

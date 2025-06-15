@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,24 +30,13 @@ const App = () => {
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            {/* Removed App header/navbar */}
+            {/* No App header/navbar */}
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={
-                <RequireAuth>
-                  <Dashboard />
-                </RequireAuth>
-              } />
-              <Route path="/dashboard/:mode" element={
-                <RequireAuth>
-                  <Dashboard />
-                </RequireAuth>
-              } />
-              <Route path="/dashboard/:mode/:category" element={
-                <RequireAuth>
-                  <Dashboard />
-                </RequireAuth>
-              } />
+              {/* Allow /dashboard and subroutes to be public for limited view */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/:mode" element={<Dashboard />} />
+              <Route path="/dashboard/:mode/:category" element={<Dashboard />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/signin" element={<SignIn />} />
@@ -68,4 +56,3 @@ const App = () => {
 };
 
 export default App;
-

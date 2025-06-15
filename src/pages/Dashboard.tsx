@@ -7,7 +7,8 @@ import { Menu } from "lucide-react";
 import PromptForm from "@/components/prompts/PromptForm";
 import PromptList from "@/components/prompts/PromptList";
 import UserAnalytics from "@/components/analytics/UserAnalytics";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -17,6 +18,9 @@ const Dashboard = () => {
   // get route params
   const { mode, category } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isGuest = !user;
 
   const handlePromptCreated = () => setRefreshFlag(f => !f);
 
@@ -35,6 +39,9 @@ const Dashboard = () => {
   const isAnalyticsView =
     location.pathname.startsWith("/dashboard/analytics") ||
     (mode === "analytics" && !category);
+
+  // For guests, do not show analytics
+  const showAnalytics = user && (isMainDashboardView || isAnalyticsView);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -58,19 +65,18 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="container mx-auto px-4 py-6">
-          {/* Hide add prompt in analytics, show on main/roles/tasks */}
-          {!isAnalyticsView && (
-            <PromptList
-              refreshFlag={refreshFlag}
-              byRole={byRole}
-              byTask={byTask}
-              showAddPrompt={true}
-              onPromptCreated={handlePromptCreated}
-            />
-          )}
-          {isMainDashboardView && <UserAnalytics />}
-          {/* Only show analytics on analytics route */}
-          {isAnalyticsView && <UserAnalytics />}
+          {/* PROMPT LIST:
+              - Guest: only limited prompts, no filtering, no add, no analytics.
+              - Auth: full functionality. */}
+          <PromptList
+            refreshFlag={refreshFlag}
+            byRole={user ? byRole : undefined}
+            byTask={user ? byTask : undefined}
+            showAddPrompt={!!user && !isAnalyticsView}
+            onPromptCreated={handlePromptCreated}
+          />
+          {/* Only show analytics for authenticated users */}
+          {showAnalytics && <UserAnalytics />}
         </div>
       </main>
     </div>
