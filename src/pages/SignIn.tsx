@@ -88,11 +88,11 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const success = await signIn(email, password);
-    if (success) {
+    const result = await signIn(email, password);
+    if (result.success) {
       navigate("/dashboard");
     } else {
-      setError("Email or password was not recognized. Please try again!");
+      setError(result.error || "Email or password was not recognized. Please try again!");
     }
   };
 

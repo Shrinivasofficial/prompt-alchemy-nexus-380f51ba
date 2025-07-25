@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
 import { PromptDB } from "@/types";
+import type { User } from "@supabase/supabase-js";
 
 interface PromptRatingProps {
   prompt: PromptDB;
-  user: { id: string; email: string } | null;
+  user: User | null;
   myRating: number | null;
   setMyRating: (rating: number) => void;
   loadingRating: boolean;

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { PromptDB } from "@/types";
+import { sanitizePromptContent, sanitizeTitle, checkRateLimit } from "@/utils/inputSanitizer";
 
 interface PromptFormProps {
   onPromptCreated?: () => void;
@@ -83,30 +84,46 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
     setErrors(v);
     if (v.length > 0) return;
 
+    // Rate limiting check
+    if (!checkRateLimit(`prompt-submit-${user.id}`, 5, 300000)) { // 5 submissions per 5 minutes
+      toast({ 
+        title: "Rate limit exceeded", 
+        description: "Please wait before submitting another prompt", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setLoading(true);
     try {
+      // Sanitize all input fields
+      const sanitizedTitle = sanitizeTitle(title);
+      const sanitizedDescription = sanitizeTitle(description); // Use same validation as title
+      const sanitizedContent = sanitizePromptContent(content);
+      const sanitizedSample = sample ? sanitizePromptContent(sample) : null;
+
       if (isEditMode && existingPrompt) {
         await updatePrompt(
           existingPrompt.id,
           {
-            title,
-            description,
-            content,
+            title: sanitizedTitle,
+            description: sanitizedDescription,
+            content: sanitizedContent,
             roles,
             tasks,
-            sample_output: sample || null,
+            sample_output: sanitizedSample,
           }
         );
         toast({ title: "Prompt updated successfully!", duration: 2000, variant: "default" });
       } else {
         await createPrompt(
           {
-            title,
-            description,
-            content,
+            title: sanitizedTitle,
+            description: sanitizedDescription,
+            content: sanitizedContent,
             roles,
             tasks,
-            sample_output: sample || null,
+            sample_output: sanitizedSample,
           },
           user.id
         );
@@ -122,12 +139,10 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
       onPromptCreated && onPromptCreated();
       postSubmitCallback && postSubmitCallback();
     } catch (error: any) {
-      // Show better error messages from Supabase
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
         title: "Error",
-        description: typeof error?.message === "string"
-          ? error.message
-          : JSON.stringify(error, null, 2),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

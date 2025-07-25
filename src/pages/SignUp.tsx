@@ -21,34 +21,35 @@ export default function SignUp() {
     e.preventDefault();
     setError("");
     setInfo("");
+    
+    // Client-side validation
     if (!username || username.length < 2) {
       setError("Please pick a username with at least 2 characters.");
       return;
     }
-    if (password.length < 3) {
-      setError("Password must be at least 3 characters.");
-      return;
-    }
-    const success = await signUp(email, password);
-    if (success) {
+    
+    const result = await signUp(email, password);
+    if (result.success) {
       // Retrieve current session so we have the user id
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;
       if (user) {
         // Ensure profile row (will not overwrite existing one)
-        await supabase
-          .from("profiles")
-          .upsert([
-              { id: user.id, email: user.email, username }
-            ],
-            { onConflict: "id", ignoreDuplicates: false }
-          );
-        setInfo("Sign up successful! Please check your email to verify your account before signing in.");
-      } else {
-        setInfo("Sign up successful! Please check your email to verify your account before signing in.");
+        try {
+          await supabase
+            .from("profiles")
+            .upsert([
+                { id: user.id, email: user.email, username }
+              ],
+              { onConflict: "id", ignoreDuplicates: false }
+            );
+        } catch (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
       }
+      setInfo("Sign up successful! Please check your email to verify your account before signing in.");
     } else {
-      setError("This email is already in use. Try another, or sign in.");
+      setError(result.error || "Sign up failed. Please try again.");
     }
   };
 
@@ -77,12 +78,15 @@ export default function SignUp() {
         />
         <Input
           type="password"
-          placeholder="Password (min 3 chars)"
+          placeholder="Password (min 8 chars)"
           value={password}
           required
-          minLength={3}
+          minLength={8}
           onChange={e => setPassword(e.target.value)}
         />
+        <div className="text-xs text-muted-foreground">
+          Password must contain: 8+ characters, uppercase, lowercase, number, and special character
+        </div>
         {error && (
           <div className="rounded text-destructive bg-destructive/10 px-3 py-2 text-sm">{error}</div>
         )}

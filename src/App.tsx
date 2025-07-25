@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 const App = () => {
   // Add: ensure user profile row always exists
   const { user } = useAuth();
-  useEnsureProfile({ user });
+  useEnsureProfile({ user: user ? { id: user.id, email: user.email || '' } : null });
 
   return (
     <QueryClientProvider client={queryClient}>

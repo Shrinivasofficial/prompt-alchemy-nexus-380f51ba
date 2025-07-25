@@ -17,9 +17,11 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
+import type { User } from "@supabase/supabase-js";
+
 interface PromptCardActionsProps {
   prompt: PromptDB;
-  user: { id: string; email: string } | null;
+  user: User | null;
   isOwner: boolean;
   copied: boolean;
   setCopied: (v: boolean) => void;
