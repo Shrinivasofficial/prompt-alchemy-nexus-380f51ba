@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export default function SignUp() {
   //
+  //
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
