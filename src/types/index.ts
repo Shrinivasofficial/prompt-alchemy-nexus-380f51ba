@@ -13,7 +13,8 @@ export type Role =
 
 export type Task = 
   | "Writing" 
-  | "Analysis" 
+  | "Analysis"
+  | "Image Generation"
   | "Code Review" 
   | "Creative" 
   | "Technical" 
