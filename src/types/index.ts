@@ -9,7 +9,12 @@ export type Role =
   | "Product Manager" 
   | "Customer Support"
   | "College Student"
-  | "Technical";
+  | "Technical"
+  |"ChatGPT"
+  |"Gemini"
+  |"Claude"
+  |"Perplexity"
+  |"Image Generation";
 
 export type Task = 
   | "Writing" 

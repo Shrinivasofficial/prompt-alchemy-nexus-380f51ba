@@ -42,7 +42,7 @@ export const prompts: Prompt[] = [
     title: "SWOT Analysis Generator",
     description: "Creates detailed SWOT analyses for business planning",
     content: "You are a strategic business analyst with MBA background. Conduct a comprehensive SWOT analysis for [BUSINESS/PRODUCT]. For each category (Strengths, Weaknesses, Opportunities, Threats), provide 5-7 detailed points with brief explanations. Consider internal factors (resources, capabilities, USPs) and external factors (market trends, competition, economic factors). Conclude with 3-5 strategic recommendations based on the analysis.",
-    roles: ["Analyst", "Manager", "Product Manager"],
+    roles: ["Analyst", "Manager", "Product Manager","ChatGPT","Gemini","Claude","Perplexity","Image Generation"],
     tasks: ["Analysis", "Research", "Planning"],
     createdBy: "Isenberg",
     rating: 4.6,
