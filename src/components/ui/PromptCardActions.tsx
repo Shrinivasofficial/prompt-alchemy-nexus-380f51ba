@@ -1,5 +1,5 @@
 
-import { FileText, Copy, Edit, Trash2 } from "lucide-react";
+import { FileText, Copy, Edit, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import * as utils from "@/utils/supabasePromptUtils";
@@ -95,7 +95,7 @@ export function PromptCardActions({
         className="h-8 w-8 p-0"
         onClick={() => setShowUsage(true)}
       >
-        <FileText className="h-4 w-4" />
+        <Eye className="h-4 w-4" />
         <span className="sr-only">Sample Usage</span>
       </Button>
       {/* Copy button for non-owners */}

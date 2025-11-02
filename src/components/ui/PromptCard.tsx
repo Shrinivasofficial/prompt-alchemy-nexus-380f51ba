@@ -35,6 +35,7 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
   const [myRating, setMyRating] = useState<number | null>(null);
   const [loadingRating, setLoadingRating] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false); // new state
 
   // Is the current user the owner of this prompt?
   const isOwner = user && prompt.created_by === user.id;
@@ -71,10 +72,32 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
             {(typeof analytics?.avg_rating === "number"
               ? analytics.avg_rating.toFixed(1)
               : (prompt.avg_rating || 0).toFixed(1))}
-            <span className="ml-2">{(analytics?.ratings_count || prompt.ratings_count || 0)} ratings</span>
+            <span className="ml-2">
+              {(analytics?.ratings_count || prompt.ratings_count || 0)} ratings
+            </span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground mb-4">{prompt.description}</p>
+
+        {/* Prompt Description with Read More toggle */}
+        <div className="mb-4">
+          <p
+            className={cn(
+              "text-sm text-muted-foreground transition-all duration-300",
+              !showFullDescription && "line-clamp-3"
+            )}
+          >
+            {prompt.description}
+          </p>
+          {prompt.description.length > 150 && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="text-xs text-primary mt-1 hover:underline"
+            >
+              {showFullDescription ? "Read less" : "Read more"}
+            </button>
+          )}
+        </div>
+
         <div className="flex flex-wrap gap-2 mb-4">
           {prompt.roles.map((role) => (
             <Badge key={role} variant="outline" className="bg-primary/5">
@@ -89,6 +112,7 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
             </Badge>
           ))}
         </div>
+
         <PromptRating
           prompt={prompt}
           user={user}
@@ -98,9 +122,9 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
           setLoadingRating={setLoadingRating}
           isOwner={!!isOwner}
         />
+
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
-            {/* Show username, or fallback; never show UID */}
             {username && username !== prompt.created_by
               ? username
               : "Unknown user"}
@@ -118,6 +142,7 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
             />
           </div>
         </div>
+
         <div
           className={cn(
             "absolute bottom-0 left-0 right-0 h-1 bg-gradient-primary",
@@ -126,40 +151,46 @@ export function PromptCard({ prompt, analytics, index = 0, username }: PromptCar
           )}
         />
       </div>
+
       {/* Sample Usage Dialog */}
-      <Dialog open={showUsage} onOpenChange={setShowUsage}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Sample Usage</DialogTitle>
-            <DialogDescription>
-              Replace the placeholders with your specific information.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="rounded-md bg-muted p-4">
-              <pre className="text-sm whitespace-pre-wrap">{prompt.content}</pre>
-            </div>
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium">Fill in these placeholders:</h4>
-              {extractPlaceholders().map((placeholder) => (
-                <div key={placeholder} className="space-y-2">
-                  <h5 className="text-sm font-semibold">[{placeholder}]</h5>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    {generateSampleValues(placeholder).map((example, i) => (
-                      <div 
-                        key={i}
-                        className="bg-background border border-border rounded-md p-2 text-xs"
-                      >
-                        "{example}"
-                      </div>
-                    ))}
-                  </div>
+     <Dialog open={showUsage} onOpenChange={setShowUsage}>
+  <DialogContent className="sm:max-w-md max-h-[80vh] overflow-hidden">
+    <DialogHeader>
+      <DialogTitle>Sample Usage</DialogTitle>
+      <DialogDescription>
+        Replace the placeholders with your specific information.
+      </DialogDescription>
+    </DialogHeader>
+
+    {/* Scrollable content */}
+    <div className="space-y-6 py-4 overflow-y-auto max-h-[65vh] pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div className="rounded-md bg-muted p-4">
+        <pre className="text-sm whitespace-pre-wrap">{prompt.content}</pre>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">Fill in these placeholders:</h4>
+        {extractPlaceholders().map((placeholder) => (
+          <div key={placeholder} className="space-y-2">
+            <h5 className="text-sm font-semibold">[{placeholder}]</h5>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              {generateSampleValues(placeholder).map((example, i) => (
+                <div
+                  key={i}
+                  className="bg-background border border-border rounded-md p-2 text-xs"
+                >
+                  "{example}"
                 </div>
               ))}
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        ))}
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
+
       <PromptEditForm
         prompt={prompt}
         open={showEdit}

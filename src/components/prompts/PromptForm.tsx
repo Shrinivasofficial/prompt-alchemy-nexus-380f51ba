@@ -155,14 +155,20 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
   const availableTasks = getAllTasks();
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+  <div className="max-h-[80vh] overflow-hidden flex flex-col">
+    <form
+      className="space-y-4 overflow-y-auto px-2 max-h-[75vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+      onSubmit={handleSubmit}
+    >
       <h2 className="text-xl font-bold mb-2">
         {isEditMode ? "Edit Prompt" : "Add a Prompt"}
       </h2>
 
       {errors.length > 0 && (
         <div className="p-3 bg-red-100 border border-destructive text-destructive rounded-md text-sm">
-          {errors.map(e => <div key={e}>{e}</div>)}
+          {errors.map((e) => (
+            <div key={e}>{e}</div>
+          ))}
         </div>
       )}
 
@@ -171,7 +177,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
         <Input
           placeholder="Prompt title"
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           autoFocus
           required
         />
@@ -180,10 +186,14 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
       <div>
         <Label>Roles</Label>
         <div className="flex flex-wrap gap-2 pt-1">
-          {availableRoles.map(opt => (
+          {availableRoles.map((opt) => (
             <Badge
               key={opt}
-              className={`cursor-pointer ${roles.includes(opt) ? "bg-primary text-white" : "bg-muted/50"}`}
+              className={`cursor-pointer ${
+                roles.includes(opt)
+                  ? "bg-primary text-white"
+                  : "bg-muted/50"
+              }`}
               onClick={() => handleToggle(opt, roles, setRoles)}
               variant={roles.includes(opt) ? "default" : "outline"}
             >
@@ -192,13 +202,18 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
           ))}
         </div>
       </div>
+
       <div>
         <Label>Tasks</Label>
         <div className="flex flex-wrap gap-2 pt-1">
-          {availableTasks.map(opt => (
+          {availableTasks.map((opt) => (
             <Badge
               key={opt}
-              className={`cursor-pointer ${tasks.includes(opt) ? "bg-secondary text-primary" : "bg-muted/50"}`}
+              className={`cursor-pointer ${
+                tasks.includes(opt)
+                  ? "bg-secondary text-primary"
+                  : "bg-muted/50"
+              }`}
               onClick={() => handleToggle(opt, tasks, setTasks)}
               variant={tasks.includes(opt) ? "secondary" : "outline"}
             >
@@ -213,38 +228,50 @@ const PromptForm: React.FC<PromptFormProps> = ({ onPromptCreated, postSubmitCall
         <Textarea
           placeholder="Short description"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           required
         />
       </div>
+
       <div>
         <Label>Prompt</Label>
         <Textarea
           placeholder="Prompt text"
           value={content}
-          onChange={e => setContent(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
           required
         />
       </div>
+
       <div>
-        <Label>Sample Output <span className="text-xs text-muted-foreground">(optional)</span></Label>
+        <Label>
+          Sample Output{" "}
+          <span className="text-xs text-muted-foreground">(optional)</span>
+        </Label>
         <Textarea
           placeholder="Sample output (optional)"
           value={sample}
-          onChange={e => setSample(e.target.value)}
+          onChange={(e) => setSample(e.target.value)}
         />
       </div>
+
       <Button
         type="submit"
         disabled={loading || validate().length > 0}
         className="mt-2 w-full"
       >
         {loading
-          ? (isEditMode ? "Updating..." : "Submitting...")
-          : (isEditMode ? "Update Prompt" : "Submit")}
+          ? isEditMode
+            ? "Updating..."
+            : "Submitting..."
+          : isEditMode
+          ? "Update Prompt"
+          : "Submit"}
       </Button>
     </form>
-  );
+  </div>
+);
+
 };
 
 export default PromptForm;
