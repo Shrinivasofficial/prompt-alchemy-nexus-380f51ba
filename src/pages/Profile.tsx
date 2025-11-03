@@ -8,9 +8,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import AvatarUploader from "@/components/profile/AvatarUploader";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+const navigate = useNavigate();
+
+useEffect(() => {
+  if (!user) navigate("/dashboard");
+}, [user]);
+
+if (loading) {
+  return (
+    <div className="my-8 p-6 max-w-lg mx-auto bg-card rounded-lg shadow-md">
+      <p>Loading profile...</p>
+    </div>
+  );
+}
+
+if (!user) {
+  return (
+    <div className="my-8 p-6 max-w-lg mx-auto bg-card rounded-lg shadow-md">
+      <p>You must be signed in to view your profile.</p>
+    </div>
+  );
+}
+
   const [username, setUsername] = useState("");
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState("");
