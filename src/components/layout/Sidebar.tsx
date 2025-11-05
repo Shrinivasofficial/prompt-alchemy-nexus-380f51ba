@@ -55,11 +55,16 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: SidebarProps) => {
       >
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
-            <h1 className="text-xl font-semibold">PromptNexus</h1>
-          </Link>
+  <div className="h-8 w-8 rounded-md flex items-center justify-center">
+    <img
+      src="/Promptnexus.png"     // 👈 your logo file in public folder
+      alt="PromptNexus logo"
+      className="h-8 w-8 object-contain"
+    />
+  </div>
+  <h1 className="text-xl font-semibold">PromptNexus</h1>
+</Link>
+
           <Button 
             variant="ghost" 
             size="icon" 

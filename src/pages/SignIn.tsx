@@ -31,7 +31,7 @@ function ForgotPasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 animate-fade-in">
-      <div className="bg-card shadow-2xl rounded-2xl px-8 py-7 w-full max-w-sm flex flex-col animate-fade-in border border-muted min-w-[340px] sm:min-w-[400px]">
+      <div className="bg-white shadow-2xl rounded-2xl px-8 py-7 w-full max-w-sm flex flex-col animate-fade-in border border-muted min-w-[340px] sm:min-w-[400px]">
         <div className="flex flex-col items-center gap-1 mb-4">
           <div className="flex items-center justify-center bg-primary/10 text-primary rounded-full h-12 w-12 mb-2">
             <Mail size={28} />

@@ -15,9 +15,13 @@ const About = () => {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+             <div className="h-15 w-15 rounded-md flex items-center justify-center">
+    <img
+      src="/Promptnexus.png"     // 👈 your logo file in public folder
+      alt="PromptNexus logo"
+      className="h-12 w-12 object-contain"
+    />
+  </div>
             <span className="text-xl font-semibold">PromptNexus</span>
           </Link>
           
@@ -31,9 +35,9 @@ const About = () => {
             <Link to="/about" className="text-sm font-medium hover-underline font-semibold text-primary">
               About
             </Link>
-            <Link to="/contact" className="text-sm font-medium hover-underline">
+            {/* <Link to="/contact" className="text-sm font-medium hover-underline">
               Contact
-            </Link>
+            </Link> */}
           </nav>
           
           <div className="flex items-center gap-4">
@@ -71,41 +75,7 @@ const About = () => {
           </div>
         </section>
         
-        {/* Team Section */}
-        <section className="bg-muted/30 py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold mb-6 animate-fade-in">Meet Our Team</h2>
-              <p className="text-lg text-muted-foreground mb-12 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                PromptNexus is built by a dedicated team of AI enthusiasts, engineers, and designers who are passionate about making AI more accessible and useful.
-              </p>
-            </div>
-            
-            <div className="w-full flex justify-center">
-  <div className="max-w-md w-full stagger-animation">
-    {[
-      {
-        name: "Shrinivas S",
-        role: "Founder PromptNexus",
-        bio: "Hey! I’m Shrinivas, founder of PromptNexus. I blend my love for AI and code to build smart tools that help people do more with less. Big on tech, bigger on impact.",
-        delay: 0.15
-      }
-    ].map((member, index) => (
-      <div
-        key={index}
-        className="bg-background rounded-xl p-6 border border-border shadow-sm hover:shadow-premium transition-shadow mx-auto"
-      >
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 animate-pulse-slow mx-auto" />
-        <h3 className="text-xl font-semibold mb-1 text-center">{member.name}</h3>
-        <p className="text-primary mb-4 text-sm text-center">{member.role}</p>
-        <p className="text-muted-foreground text-center">{member.bio}</p>
-      </div>
-    ))}
-  </div>
-</div>
-
-          </div>
-        </section>
+      
         
         {/* Features Section */}
         <section className="container mx-auto px-4 py-16 md:py-24">
@@ -170,9 +140,13 @@ const About = () => {
           <div className="flex flex-col md:flex-row justify-between gap-8">
             <div className="mb-6 md:mb-0">
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-md bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">P</span>
-                </div>
+                 <div className="h-15 w-15 rounded-md flex items-center justify-center">
+    <img
+      src="/Promptnexus.png"     // 👈 your logo file in public folder
+      alt="PromptNexus logo"
+      className="h-10 w-10 object-contain"
+    />
+  </div>
                 <span className="text-xl font-semibold">PromptNexus</span>
               </div>
               <p className="text-muted-foreground max-w-xs">
@@ -193,13 +167,13 @@ const About = () => {
                   <li>
                     <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium mb-3">Legal</h3>
                 <ul className="space-y-2">
                   <li>
@@ -227,7 +201,7 @@ const About = () => {
                     <a href="#" className="text-sm text-muted-foreground hover:text-foreground">Discord</a>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
           

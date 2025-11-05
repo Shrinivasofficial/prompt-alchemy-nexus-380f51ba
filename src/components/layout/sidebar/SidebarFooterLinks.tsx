@@ -18,7 +18,7 @@ export default function SidebarFooterLinks() {
       >
         About
       </Link>
-      <Link
+      {/* <Link
         to="/contact"
         className={cn(
           "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -28,7 +28,7 @@ export default function SidebarFooterLinks() {
         )}
       >
         Contact
-      </Link>
+      </Link> */}
     </div>
   );
 }

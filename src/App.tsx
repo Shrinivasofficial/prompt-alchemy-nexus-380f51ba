@@ -19,42 +19,55 @@ import RequireAuth from "@/components/RequireAuth";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  // Add: ensure user profile row always exists
+// ✅ Wrap app routes in AuthProvider, then use the context INSIDE
+function AppRoutes() {
   const { user } = useAuth();
-  useEnsureProfile({ user: user ? { id: user.id, email: user.email || '' } : null });
+  useEnsureProfile({
+    user: user ? { id: user.id, email: user.email || "" } : null,
+  });
 
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/:mode" element={<Dashboard />} />
+        <Route path="/dashboard/:mode/:category" element={<Dashboard />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Protected route */}
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
+            </RequireAuth>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+
+        {/* ✅ AuthProvider must wrap where useAuth() is used */}
         <AuthProvider>
-          <BrowserRouter>
-            {/* No App header/navbar */}
-            <Routes>
-              <Route path="/" element={<Index />} />
-              {/* Allow /dashboard and subroutes to be public for limited view */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/:mode" element={<Dashboard />} />
-              <Route path="/dashboard/:mode/:category" element={<Dashboard />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/profile" element={
-                <RequireAuth>
-                  <Profile />
-                </RequireAuth>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <AppRoutes />
         </AuthProvider>
+
       </TooltipProvider>
     </QueryClientProvider>
   );
-};
-
-export default App;
+}

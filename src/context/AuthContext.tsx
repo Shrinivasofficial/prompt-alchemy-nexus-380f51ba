@@ -5,7 +5,7 @@ import type { User, Session } from "@supabase/supabase-js";
 interface AuthContextProps {
   user: User | null;
   session: Session | null;
-  loading: boolean; // ✅ added
+  loading: boolean;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => void;
@@ -14,13 +14,13 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   user: null,
   session: null,
-  loading: true, // ✅ default to true
+  loading: true,
   signIn: async () => ({ success: false }),
   signUp: async () => ({ success: false }),
   signOut: () => {},
 });
 
-// Password validation helper
+// ✅ Password validation
 const validatePassword = (password: string): { isValid: boolean; error?: string } => {
   if (password.length < 8)
     return { isValid: false, error: "Password must be at least 8 characters long" };
@@ -38,27 +38,40 @@ const validatePassword = (password: string): { isValid: boolean; error?: string 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true); // ✅ added
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const initAuth = async () => {
-      // 1️⃣ Try restoring session
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      // Step 1: Check if a session already exists
+      const { data, error } = await supabase.auth.getSession();
+      if (error) console.warn("Session fetch error:", error.message);
+
+      if (mounted) {
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      }
+
+      // Step 2: Listen for future auth changes
+      const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
+      });
+
+      // Step 3: Mark loading false *after* initial session + listener are ready
+      if (mounted) setLoading(false);
+
+      return () => listener.subscription.unsubscribe();
     };
 
     initAuth();
 
-    // 2️⃣ Listen to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

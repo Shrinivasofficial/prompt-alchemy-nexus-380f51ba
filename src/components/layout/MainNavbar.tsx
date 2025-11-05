@@ -18,9 +18,9 @@ export default function MainNavbar({ signOut }: { signOut: () => void }) {
       <Link to="/about" className="text-sm font-medium hover-underline">
         About
       </Link>
-      <Link to="/contact" className="text-sm font-medium hover-underline">
+      {/* <Link to="/contact" className="text-sm font-medium hover-underline">
         Contact
-      </Link>
+      </Link> */}
       {/* Add Profile link for logged-in users */}
       {user && (
         <Link to="/profile" className="text-sm font-medium hover-underline">

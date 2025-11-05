@@ -20,9 +20,13 @@ const Index = () => {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+            <div className="h-15 w-15 rounded-md flex items-center justify-center">
+    <img
+      src="/Promptnexus.png"     // 👈 your logo file in public folder
+      alt="PromptNexus logo"
+      className="h-12 w-12 object-contain"
+    />
+  </div>
             <span className="text-xl font-semibold">PromptNexus</span>
           </div>
           <MainNavbar signOut={signOut} />
@@ -80,9 +84,9 @@ const Index = () => {
               <Button asChild size="lg" className="bg-gradient-primary hover:opacity-90 transition-opacity">
                 <Link to="/dashboard">Explore Dashboard</Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              {/* <Button asChild variant="outline" size="lg">
                 <Link to="/contact">Contact Us</Link>
-              </Button>
+              </Button> */}
             </div>
           </div>
         </section>
@@ -93,9 +97,13 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between gap-8">
             <div className="mb-6 md:mb-0">
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-md bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">P</span>
-                </div>
+                <div className="h-8 w-8 rounded-md flex items-center justify-center">
+    <img
+      src="/Promptnexus.png"     // 👈 your logo file in public folder
+      alt="PromptNexus logo"
+      className="h-10 w-10 object-contain"
+    />
+  </div>
                 <span className="text-xl font-semibold">PromptNexus</span>
               </div>
               <p className="text-muted-foreground max-w-xs">
@@ -116,13 +124,13 @@ const Index = () => {
                   <li>
                     <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium mb-3">Legal</h3>
                 <ul className="space-y-2">
                   <li>
@@ -150,7 +158,7 @@ const Index = () => {
                     <a href="#" className="text-sm text-muted-foreground hover:text-foreground">Discord</a>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
           
