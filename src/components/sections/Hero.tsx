@@ -2,10 +2,14 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LogIn } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
 
 export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
+    const { user, signOut } = useAuth();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,11 +51,25 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-16">
-            <Button asChild size="lg" className="bg-gradient-primary hover:opacity-90 transition-opacity">
+             {!user ? (
+              <>
+                <Button asChild variant="default" className="hidden md:flex bg-gradient-primary hover:opacity-90 transition-opacity">
+                  <Link to="/signin" className="flex items-center gap-2">
+                    <LogIn className="w-4 h-4" />
+ Get Started                  </Link>
+                </Button>
+                
+              </>
+            ) : (
+              <>
+                 <Button asChild size="lg" className="bg-gradient-primary hover:opacity-90 transition-opacity">
               <Link to="/dashboard" className="px-8">
                 Get Started <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
+              </>
+            )}
+           
             <Button asChild variant="outline" size="lg">
               <Link to="/about">Learn More</Link>
             </Button>
