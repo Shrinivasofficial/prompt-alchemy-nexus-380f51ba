@@ -59,9 +59,21 @@ const Index = () => {
                 </Button>
               </>
             )}
-            <Button asChild variant="outline" className="md:hidden">
+             {!user ? (
+              <>
+                <Button asChild variant="outline" className="md:hidden">
+              <Link to="/signin">Menu</Link>
+            </Button>
+              </>
+            ) : (
+              <>
+                {/* Profile button (mobile and desktop), visible only when logged in */}
+               <Button asChild variant="outline" className="md:hidden">
               <Link to="/dashboard">Menu</Link>
             </Button>
+              </>
+            )}
+            
           </div>
         </div>
       </header>
