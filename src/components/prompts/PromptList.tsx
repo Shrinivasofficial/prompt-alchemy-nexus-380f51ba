@@ -151,29 +151,7 @@ const PromptList: React.FC<PromptListProps> = ({
       )}
 
       {/* ============== TOP: CENTERED SEARCH BAR ============== */}
-      <div className="mt-6 mb-3 flex justify-center">
-        <div className="w-full max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search prompts by title..."
-              className="pl-9 pr-8"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+     
 
       {/* Optional centered heading + count */}
      <div className="flex items-center justify-between mb-4">
@@ -181,17 +159,32 @@ const PromptList: React.FC<PromptListProps> = ({
     {isGuest ? "Featured Prompts" : "All Prompts"}
   </h2>
 
-  {!isGuest && (
-    <p className="text-xs text-muted-foreground">
-      {debouncedQuery
-        ? `Found ${totalPrompts} prompt${
-            totalPrompts === 1 ? "" : "s"
-          } matching “${debouncedQuery}”.`
-        : `${totalPrompts} prompt${
-            totalPrompts === 1 ? "" : "s"
-          } available.`}
-    </p>
-  )}
+
+</div>
+ <div className="mt-6 mb-3 flex justify-center">
+  <div className="w-full mx-5"> 
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+
+      <Input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search prompts by title..."
+        className="pl-9 pr-8 w-full"
+      />
+
+      {searchQuery && (
+        <button
+          type="button"
+          onClick={() => setSearchQuery("")}
+          className="absolute right-3 top-1/2 -translate-y-1/2"
+        >
+          <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+        </button>
+      )}
+    </div>
+  </div>
 </div>
 
 
